@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
-import com.ihfazh.moviecatalog.data.TvShowEntity;
+import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.databinding.ActivityDetailTvShowBinding;
 
 public class DetailTvShowActivity extends AppCompatActivity {

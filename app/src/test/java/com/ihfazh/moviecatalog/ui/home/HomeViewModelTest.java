@@ -1,7 +1,7 @@
 package com.ihfazh.moviecatalog.ui.home;
 
-import com.ihfazh.moviecatalog.data.MovieEntity;
-import com.ihfazh.moviecatalog.data.TvShowEntity;
+import com.ihfazh.moviecatalog.data.entities.MovieEntity;
+import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.ihfazh.moviecatalog.data;
+package com.ihfazh.moviecatalog.data.entities;
 
 public class MovieEntity {
     private String posterUrl;
@@ -9,6 +9,7 @@ public class MovieEntity {
     private String budget;
     private String overview;
     private String score;
+    private String id;
 
     public MovieEntity() {
     }
@@ -87,4 +88,11 @@ public class MovieEntity {
     public void setScore(String score) {
         this.score = score;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+
+
 }

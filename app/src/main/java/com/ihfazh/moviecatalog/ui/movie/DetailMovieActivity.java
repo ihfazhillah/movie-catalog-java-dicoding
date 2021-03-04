@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
-import com.ihfazh.moviecatalog.data.MovieEntity;
+import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.databinding.ActivityDetailMovieBinding;
 
 public class DetailMovieActivity extends AppCompatActivity {

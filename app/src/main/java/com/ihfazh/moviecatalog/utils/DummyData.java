@@ -1,8 +1,8 @@
 package com.ihfazh.moviecatalog.utils;
 
 
-import com.ihfazh.moviecatalog.data.MovieEntity;
-import com.ihfazh.moviecatalog.data.TvShowEntity;
+import com.ihfazh.moviecatalog.data.entities.MovieEntity;
+import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 
 import java.util.ArrayList;
 import java.util.List;

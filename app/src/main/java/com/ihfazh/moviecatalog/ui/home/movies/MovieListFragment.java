@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,18 @@ import com.ihfazh.moviecatalog.databinding.FragmentMovieListBinding;
 import com.ihfazh.moviecatalog.ui.home.HomeViewModel;
 import com.ihfazh.moviecatalog.ui.home.OnListItemClicked;
 import com.ihfazh.moviecatalog.ui.movie.DetailMovieActivity;
+import com.ihfazh.moviecatalog.ui.viewmodels.ViewModelFactory;
+import com.ihfazh.moviecatalog.utils.dagger.ApplicationComponent;
+import com.ihfazh.moviecatalog.utils.dagger.DaggerApplicationComponent;
+
+import javax.inject.Inject;
 
 public class MovieListFragment extends Fragment implements OnListItemClicked {
+    private static final String TAG = "MovieListFragment";
     private FragmentMovieListBinding binding;
+
+    @Inject public ViewModelFactory factory;
+    ApplicationComponent applicationComponent;
 
     public MovieListFragment() {
         // Required empty public constructor
@@ -46,14 +56,18 @@ public class MovieListFragment extends Fragment implements OnListItemClicked {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        HomeViewModel viewModel = new ViewModelProvider(requireActivity(), new ViewModelProvider.NewInstanceFactory()).get(HomeViewModel.class);
+        applicationComponent = DaggerApplicationComponent.create();
+        applicationComponent.inject(this);
+
+        HomeViewModel viewModel = new ViewModelProvider(requireActivity(), factory).get(HomeViewModel.class);
 
         binding.rvMovies.setHasFixedSize(true);
         binding.rvMovies.setLayoutManager(new LinearLayoutManager(getContext()));
 
         MovieListAdapter adapter = new MovieListAdapter();
         adapter.setListener(this);
-        adapter.setMovieEntities(viewModel.loadMovies());
+        viewModel.loadMovies().observe(getViewLifecycleOwner(), adapter::setMovieEntities);
+
         binding.rvMovies.setAdapter(adapter);
     }
 

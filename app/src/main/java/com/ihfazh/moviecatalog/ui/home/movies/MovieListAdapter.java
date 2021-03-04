@@ -7,20 +7,23 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.ihfazh.moviecatalog.data.MovieEntity;
+import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.databinding.MovieItemBinding;
 import com.ihfazh.moviecatalog.ui.home.OnListItemClicked;
+import com.ihfazh.moviecatalog.utils.TMDBUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.ViewHolder> {
 
     OnListItemClicked listener;
 
-    private List<MovieEntity> movieEntities;
+    private final ArrayList<MovieEntity> movieEntities = new ArrayList<>();
 
     public void setMovieEntities(List<MovieEntity> movieEntities) {
-        this.movieEntities = movieEntities;
+        this.movieEntities.addAll(movieEntities);
+        notifyDataSetChanged();
     }
 
     public void setListener(OnListItemClicked listener) {
@@ -58,8 +61,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
             binding.title.setText(movie.getTitle());
             binding.hour.setText(movie.getLength());
             Glide.with(itemView)
-                    .load(movie.getPosterUrl())
-                    // todo: add on error
+                    .load(TMDBUtils.getFullImagePath(movie.getPosterUrl()))
                     .into(binding.imgPoster);
             itemView.setOnClickListener(e -> {
                 listener.onItemClicked(movie.getTitle());

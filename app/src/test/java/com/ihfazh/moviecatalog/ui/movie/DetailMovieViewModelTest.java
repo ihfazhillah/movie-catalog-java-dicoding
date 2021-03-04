@@ -1,6 +1,6 @@
 package com.ihfazh.moviecatalog.ui.movie;
 
-import com.ihfazh.moviecatalog.data.MovieEntity;
+import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.utils.DummyData;
 
 import org.junit.Before;

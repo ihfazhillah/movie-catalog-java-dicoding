@@ -1,4 +1,4 @@
-package com.ihfazh.moviecatalog.data;
+package com.ihfazh.moviecatalog.data.entities;
 
 public class TvShowEntity {
     private String poster_url;

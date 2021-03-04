@@ -1,6 +1,6 @@
 package com.ihfazh.moviecatalog.ui.tvshows;
 
-import com.ihfazh.moviecatalog.data.TvShowEntity;
+import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.utils.DummyData;
 
 import org.junit.Before;
