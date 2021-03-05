@@ -39,4 +39,6 @@ ext {
     roboElectricVersion = "4.4"
     daggerVersion = "2.33"
     retrofitVersion = "2.9.0"
+
+    mockitoVersion = "2.25.0"
 }
