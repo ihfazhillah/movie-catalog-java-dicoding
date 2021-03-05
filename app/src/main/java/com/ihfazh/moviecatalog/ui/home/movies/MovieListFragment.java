@@ -21,6 +21,7 @@ import com.ihfazh.moviecatalog.ui.movie.DetailMovieActivity;
 import com.ihfazh.moviecatalog.ui.viewmodels.ViewModelFactory;
 import com.ihfazh.moviecatalog.utils.dagger.ApplicationComponent;
 import com.ihfazh.moviecatalog.utils.dagger.DaggerApplicationComponent;
+import com.ihfazh.moviecatalog.utils.dagger.modules.ApplicationModule;
 
 import javax.inject.Inject;
 
@@ -56,7 +57,9 @@ public class MovieListFragment extends Fragment implements OnListItemClicked {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        applicationComponent = DaggerApplicationComponent.create();
+        applicationComponent = DaggerApplicationComponent.builder()
+            .applicationModule(new ApplicationModule(requireContext()))
+            .build();
         applicationComponent.inject(this);
 
         HomeViewModel viewModel = new ViewModelProvider(requireActivity(), factory).get(HomeViewModel.class);

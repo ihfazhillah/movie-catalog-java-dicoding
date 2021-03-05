@@ -1,6 +1,9 @@
 package com.ihfazh.moviecatalog.utils.dagger.modules;
 
+import android.content.Context;
 import android.util.Log;
+
+import com.ihfazh.moviecatalog.R;
 
 import javax.inject.Singleton;
 
@@ -19,14 +22,14 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    OkHttpClient provideClient(){
+    OkHttpClient provideClient(Context context){
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
                     Request request = chain.request();
                     HttpUrl oldUrl = request.url();
 
                     HttpUrl newUrl = oldUrl.newBuilder()
-                            .addQueryParameter("api_key", "5a75ba7d3f64c95f1280e7aa05cd2bc8")
+                            .addQueryParameter("api_key", context.getString(R.string.tmdb_api_key))
                             .build();
 
 
