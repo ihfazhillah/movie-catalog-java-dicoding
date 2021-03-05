@@ -10,6 +10,8 @@ import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.data.responses.MovieListResponse;
 import com.ihfazh.moviecatalog.data.responses.MovieResultItem;
+import com.ihfazh.moviecatalog.data.responses.TVListResponse;
+import com.ihfazh.moviecatalog.data.responses.TVResultItem;
 import com.ihfazh.moviecatalog.utils.dagger.modules.ApiService;
 
 import java.util.ArrayList;
@@ -63,6 +65,27 @@ public class TMDBRepository implements TMDBDataSource {
 
     @Override
     public LiveData<List<TvShowEntity>> getTvShows() {
-        return null;
+        MutableLiveData<List<TvShowEntity>> tvShows = new MutableLiveData<>();
+        apiService.listTv().enqueue(new Callback<TVListResponse>() {
+            @Override
+            public void onResponse(Call<TVListResponse> call, Response<TVListResponse> response) {
+                ArrayList<TvShowEntity> tvShowEntities = new ArrayList<>();
+                for (TVResultItem item: response.body().getResults()){
+                    TvShowEntity tvShow = new TvShowEntity();
+                    tvShow.setTitle(item.getName());
+                    tvShow.setOverview(item.getOverview());
+                    tvShow.setId(String.valueOf(item.getId()));
+                    tvShow.setPoster_url(item.getPosterPath());
+                    tvShowEntities.add(tvShow);
+                }
+                tvShows.postValue(tvShowEntities);
+            }
+
+            @Override
+            public void onFailure(Call<TVListResponse> call, Throwable t) {
+                Log.e(TAG, "onFailure: " + t.toString());
+            }
+        });
+        return tvShows ;
     }
 }

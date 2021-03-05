@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel;
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.data.repositories.TMDBRepository;
-import com.ihfazh.moviecatalog.utils.DummyData;
 
 import java.util.List;
 
@@ -24,7 +23,7 @@ public class HomeViewModel extends ViewModel {
         return repository.getMovies();
     }
 
-    public List<TvShowEntity> loadTvShows() {
-        return DummyData.generateTvShows();
+    public LiveData<List<TvShowEntity>> loadTvShows() {
+        return repository.getTvShows();
     }
 }

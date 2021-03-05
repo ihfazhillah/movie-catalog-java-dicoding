@@ -1,6 +1,7 @@
 package com.ihfazh.moviecatalog.data.entities;
 
 public class TvShowEntity {
+    private String id;
     private String poster_url;
     private String title;
     private String status;
@@ -66,5 +67,13 @@ public class TvShowEntity {
 
     public void setScore(String score) {
         this.score = score;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

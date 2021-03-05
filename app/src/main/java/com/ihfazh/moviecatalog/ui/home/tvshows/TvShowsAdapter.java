@@ -10,15 +10,18 @@ import com.bumptech.glide.Glide;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.databinding.TvShowsItemBinding;
 import com.ihfazh.moviecatalog.ui.home.OnListItemClicked;
+import com.ihfazh.moviecatalog.utils.TMDBUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TvShowsAdapter extends RecyclerView.Adapter<TvShowsAdapter.ViewHolder> {
-    private List<TvShowEntity> tvShows;
+    private ArrayList<TvShowEntity> tvShows = new ArrayList<>();
     private OnListItemClicked listener;
 
     public void setTvShows(List<TvShowEntity> tvShows) {
-        this.tvShows = tvShows;
+        this.tvShows.addAll(tvShows);
+        notifyDataSetChanged();
     }
 
     public void setListener(OnListItemClicked listener) {
@@ -56,7 +59,7 @@ public class TvShowsAdapter extends RecyclerView.Adapter<TvShowsAdapter.ViewHold
         void bind(TvShowEntity tvShow){
             this.binding.title.setText(tvShow.getTitle());
             Glide.with(this.binding.getRoot())
-                    .load(tvShow.getPoster_url())
+                    .load(TMDBUtils.getFullImagePath(tvShow.getPoster_url()))
                     .into(this.binding.imgPoster);
 
             itemView.setOnClickListener(e -> {

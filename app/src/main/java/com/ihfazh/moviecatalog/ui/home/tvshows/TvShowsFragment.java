@@ -16,6 +16,12 @@ import android.view.ViewGroup;
 import com.ihfazh.moviecatalog.databinding.FragmentTvShowsBinding;
 import com.ihfazh.moviecatalog.ui.home.HomeViewModel;
 import com.ihfazh.moviecatalog.ui.tvshows.DetailTvShowActivity;
+import com.ihfazh.moviecatalog.ui.viewmodels.ViewModelFactory;
+import com.ihfazh.moviecatalog.utils.dagger.ApplicationComponent;
+import com.ihfazh.moviecatalog.utils.dagger.DaggerApplicationComponent;
+import com.ihfazh.moviecatalog.utils.dagger.modules.ApplicationModule;
+
+import javax.inject.Inject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,6 +30,9 @@ import com.ihfazh.moviecatalog.ui.tvshows.DetailTvShowActivity;
  */
 public class TvShowsFragment extends Fragment {
     private FragmentTvShowsBinding binding;
+
+    @Inject public ViewModelFactory factory;
+    ApplicationComponent component;
 
     public TvShowsFragment() {
         // Required empty public constructor
@@ -59,6 +68,10 @@ public class TvShowsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        component = DaggerApplicationComponent.builder()
+                .applicationModule(new ApplicationModule(requireContext()))
+                .build();
+        component.inject(this);
 
         binding.rvTvShows.setHasFixedSize(true);
         binding.rvTvShows.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -70,8 +83,9 @@ public class TvShowsFragment extends Fragment {
             startActivity(intent);
         });
 
-        HomeViewModel modelView = new ViewModelProvider(requireActivity(), new ViewModelProvider.NewInstanceFactory()).get(HomeViewModel.class);
-        adapter.setTvShows(modelView.loadTvShows());
+
+        HomeViewModel modelView = new ViewModelProvider(requireActivity(), factory).get(HomeViewModel.class);
+        modelView.loadTvShows().observe(getViewLifecycleOwner(), adapter::setTvShows);
 
         binding.rvTvShows.setAdapter(adapter);
     }

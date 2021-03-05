@@ -34,7 +34,8 @@ public class HomeViewModelTest {
     @Rule public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Mock private TMDBRepository repository;
-    @Mock private Observer<List<MovieEntity>> observer;
+    @Mock private Observer<List<MovieEntity>> moviesObserver;
+    @Mock private Observer<List<TvShowEntity>> tvShowsObserver;
 
     @Before
     public void setUp() throws Exception {
@@ -52,14 +53,23 @@ public class HomeViewModelTest {
         assertNotNull(movieEntities);
         assertEquals(10, movieEntities.size());
 
-        viewModel.loadMovies().observeForever(observer);
-        Mockito.verify(observer).onChanged(dummyMovies);
+        viewModel.loadMovies().observeForever(moviesObserver);
+        Mockito.verify(moviesObserver).onChanged(dummyMovies);
     }
 
     @Test
     public void testLoadTvShows(){
-        List<TvShowEntity> tvShows = viewModel.loadTvShows();
-        assertNotNull(tvShows);
-        assertEquals(10, tvShows.size());
+        List<TvShowEntity> dummyTvShows = DummyData.generateTvShows();
+        MutableLiveData<List<TvShowEntity>> tvShows = new MutableLiveData<>();
+        tvShows.setValue(dummyTvShows);
+
+        Mockito.when(repository.getTvShows()).thenReturn(tvShows);
+
+        List<TvShowEntity> tvShowEntities = viewModel.loadTvShows().getValue();
+        assertNotNull(tvShowEntities);
+        assertEquals(10, tvShowEntities.size());
+
+        viewModel.loadTvShows().observeForever(tvShowsObserver);
+        Mockito.verify(tvShowsObserver).onChanged(dummyTvShows);
     }
 }
