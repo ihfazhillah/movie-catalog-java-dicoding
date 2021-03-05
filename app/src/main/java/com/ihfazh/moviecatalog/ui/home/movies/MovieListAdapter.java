@@ -64,7 +64,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
                     .load(TMDBUtils.getFullImagePath(movie.getPosterUrl()))
                     .into(binding.imgPoster);
             itemView.setOnClickListener(e -> {
-                listener.onItemClicked(movie.getTitle());
+                listener.onItemClicked(movie.getId());
             });
 
         }

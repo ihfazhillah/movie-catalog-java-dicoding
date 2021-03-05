@@ -1,21 +1,25 @@
 package com.ihfazh.moviecatalog.ui.movie;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
+import com.ihfazh.moviecatalog.data.repositories.TMDBRepository;
 import com.ihfazh.moviecatalog.utils.DummyData;
 
 import java.util.List;
 
-public class DetailMovieViewModel extends ViewModel {
-    List<MovieEntity> movies = DummyData.generateMovies();
+import javax.inject.Inject;
 
-    public MovieEntity getMovieByTitle(String title) {
-        for (MovieEntity movie : movies) {
-            if (movie.getTitle().equals(title)){
-                return movie;
-            }
-        }
-        return null;
+public class DetailMovieViewModel extends ViewModel {
+    private TMDBRepository repository;
+
+    @Inject
+    public DetailMovieViewModel(TMDBRepository repository) {
+        this.repository = repository;
+    }
+
+    public LiveData<MovieEntity> getMovieById(String id) {
+        return repository.getMovieById(id);
     }
 }

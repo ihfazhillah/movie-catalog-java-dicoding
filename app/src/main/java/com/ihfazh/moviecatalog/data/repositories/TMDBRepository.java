@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.ihfazh.moviecatalog.data.datasources.TMDBDataSource;
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
+import com.ihfazh.moviecatalog.data.responses.MovieDetail;
 import com.ihfazh.moviecatalog.data.responses.MovieListResponse;
 import com.ihfazh.moviecatalog.data.responses.MovieResultItem;
 import com.ihfazh.moviecatalog.data.responses.TVListResponse;
@@ -87,5 +88,31 @@ public class TMDBRepository implements TMDBDataSource {
             }
         });
         return tvShows ;
+    }
+
+    public LiveData<MovieEntity> getMovieById(String id) {
+        MutableLiveData<MovieEntity> movieEntity = new MutableLiveData<>();
+        apiService.getMovie(id).enqueue(new Callback<MovieDetail>() {
+            @Override
+            public void onResponse(Call<MovieDetail> call, Response<MovieDetail> response) {
+                MovieDetail detail = response.body();
+                MovieEntity entity = new MovieEntity();
+                entity.setTitle(detail.getTitle());
+                entity.setPosterUrl(detail.getPosterPath());
+                entity.setBudget(String.valueOf(detail.getBudget()));
+                entity.setScore(String.valueOf(detail.getVoteAverage()));
+                entity.setOverview(detail.getOverview());
+                entity.setLanguage(detail.getOriginalLanguage());
+                entity.setLength(String.valueOf(detail.getRuntime()));
+                entity.setStatus(detail.getStatus());
+                movieEntity.setValue(entity);
+            }
+
+            @Override
+            public void onFailure(Call<MovieDetail> call, Throwable t) {
+                Log.e(TAG, "onFailure: " + t.toString());
+            }
+        });
+        return movieEntity;
     }
 }

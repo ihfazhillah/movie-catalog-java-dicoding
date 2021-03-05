@@ -94,5 +94,7 @@ public class MovieEntity {
     }
 
 
-
+    public String getId() {
+        return id;
+    }
 }

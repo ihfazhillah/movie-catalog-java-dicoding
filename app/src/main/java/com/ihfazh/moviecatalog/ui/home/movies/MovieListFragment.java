@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,7 +76,7 @@ public class MovieListFragment extends Fragment implements OnListItemClicked {
     @Override
     public void onItemClicked(String title) {
         Intent intent = new Intent(requireActivity(), DetailMovieActivity.class);
-        intent.putExtra(DetailMovieActivity.MOVIE_TITLE, title);
+        intent.putExtra(DetailMovieActivity.MOVIE_ID, title);
         startActivity(intent);
     }
 }
