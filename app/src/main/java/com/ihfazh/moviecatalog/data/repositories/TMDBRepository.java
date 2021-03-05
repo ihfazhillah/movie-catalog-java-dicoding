@@ -11,6 +11,7 @@ import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.data.responses.MovieDetail;
 import com.ihfazh.moviecatalog.data.responses.MovieListResponse;
 import com.ihfazh.moviecatalog.data.responses.MovieResultItem;
+import com.ihfazh.moviecatalog.data.responses.TVDetail;
 import com.ihfazh.moviecatalog.data.responses.TVListResponse;
 import com.ihfazh.moviecatalog.data.responses.TVResultItem;
 import com.ihfazh.moviecatalog.utils.dagger.modules.ApiService;
@@ -26,7 +27,7 @@ import retrofit2.Response;
 
 public class TMDBRepository implements TMDBDataSource {
     private static final String TAG = "TMDBRepository";
-    private ApiService apiService;
+    private final ApiService apiService;
 
     @Inject
     public TMDBRepository(ApiService apiService) {
@@ -114,5 +115,31 @@ public class TMDBRepository implements TMDBDataSource {
             }
         });
         return movieEntity;
+    }
+
+    public LiveData<TvShowEntity> getTvById(String id){
+        MutableLiveData<TvShowEntity> tvShowEntity = new MutableLiveData<>();
+        apiService.getTv(id).enqueue(new Callback<TVDetail>() {
+            @Override
+            public void onResponse(Call<TVDetail> call, Response<TVDetail> response) {
+                TVDetail detail = response.body();
+                TvShowEntity entity = new TvShowEntity();
+                entity.setTitle(detail.getName());
+                entity.setPoster_url(detail.getPosterPath());
+                entity.setOverview(detail.getOverview());
+                entity.setScore(String.valueOf(detail.getVoteAverage()));
+                entity.setType(detail.getType());
+                entity.setId(String.valueOf(detail.getId()));
+                entity.setStatus(detail.getStatus());
+                tvShowEntity.postValue(entity);
+            }
+
+            @Override
+            public void onFailure(Call<TVDetail> call, Throwable t) {
+                Log.e(TAG, "onFailure: " + t.toString() );
+
+            }
+        });
+        return tvShowEntity;
     }
 }

@@ -2,6 +2,7 @@ package com.ihfazh.moviecatalog.utils.dagger.modules;
 
 import com.ihfazh.moviecatalog.data.responses.MovieDetail;
 import com.ihfazh.moviecatalog.data.responses.MovieListResponse;
+import com.ihfazh.moviecatalog.data.responses.TVDetail;
 import com.ihfazh.moviecatalog.data.responses.TVListResponse;
 
 import java.util.List;
@@ -19,4 +20,7 @@ public interface ApiService {
 
     @GET("movie/{id}")
     Call<MovieDetail> getMovie(@Path("id") String id);
+
+    @GET("tv/{id}")
+    Call<TVDetail> getTv(@Path("id") String id);
 }

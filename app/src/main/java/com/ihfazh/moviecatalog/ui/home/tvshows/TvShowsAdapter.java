@@ -63,7 +63,7 @@ public class TvShowsAdapter extends RecyclerView.Adapter<TvShowsAdapter.ViewHold
                     .into(this.binding.imgPoster);
 
             itemView.setOnClickListener(e -> {
-                listener.onItemClicked(tvShow.getTitle());
+                listener.onItemClicked(tvShow.getId());
             });
         }
     }

@@ -2,7 +2,7 @@ package com.ihfazh.moviecatalog.data.responses;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ProductionCompaniesItem{
+public class NetworksItem{
 
 	@SerializedName("logo_path")
 	private String logoPath;

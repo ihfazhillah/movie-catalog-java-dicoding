@@ -3,6 +3,7 @@ package com.ihfazh.moviecatalog.utils.dagger;
 import com.ihfazh.moviecatalog.ui.home.movies.MovieListFragment;
 import com.ihfazh.moviecatalog.ui.home.tvshows.TvShowsFragment;
 import com.ihfazh.moviecatalog.ui.movie.DetailMovieActivity;
+import com.ihfazh.moviecatalog.ui.tvshows.DetailTvShowActivity;
 import com.ihfazh.moviecatalog.utils.dagger.modules.ApiModule;
 import com.ihfazh.moviecatalog.utils.dagger.modules.ApplicationModule;
 import com.ihfazh.moviecatalog.utils.dagger.modules.RepositoryModule;
@@ -18,4 +19,5 @@ public interface ApplicationComponent {
     void inject(MovieListFragment view);
     void inject(TvShowsFragment view);
     void inject(DetailMovieActivity view);
+    void inject(DetailTvShowActivity view);
 }

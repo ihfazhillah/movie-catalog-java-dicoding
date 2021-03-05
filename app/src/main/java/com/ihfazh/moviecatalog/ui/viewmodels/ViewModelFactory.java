@@ -26,6 +26,8 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
             return (T) new HomeViewModel(repository);
         } else if (modelClass.isAssignableFrom(DetailMovieViewModel.class)){
             return (T) new DetailMovieViewModel(repository);
+        } else if (modelClass.isAssignableFrom(DetailTvShowViewModel.class)){
+            return (T) new DetailTvShowViewModel(repository);
         }
         return super.create(modelClass);
     }

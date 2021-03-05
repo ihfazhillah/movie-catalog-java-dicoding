@@ -1,21 +1,22 @@
 package com.ihfazh.moviecatalog.ui.tvshows;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
-import com.ihfazh.moviecatalog.utils.DummyData;
+import com.ihfazh.moviecatalog.data.repositories.TMDBRepository;
 
-import java.util.List;
+import javax.inject.Inject;
 
 public class DetailTvShowViewModel extends ViewModel {
-    List<TvShowEntity> tvShows = DummyData.generateTvShows();
+    private TMDBRepository repository;
 
-    public TvShowEntity getTvShowByTitle(String title) {
-        for (TvShowEntity tvShow : tvShows) {
-            if (tvShow.getTitle().equals(title)){
-                return tvShow;
-            }
-        }
-        return null;
+    @Inject
+    public DetailTvShowViewModel(TMDBRepository repository) {
+        this.repository = repository;
+    }
+
+    public LiveData<TvShowEntity> getTvShowById(String title) {
+        return repository.getTvById(title);
     }
 }
