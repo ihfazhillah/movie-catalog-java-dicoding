@@ -1,15 +1,19 @@
 package com.ihfazh.moviecatalog.ui.home;
 
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 
 import com.ihfazh.moviecatalog.R;
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.utils.DummyData;
+import com.ihfazh.moviecatalog.utils.EspressoIdlingResources;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.List;
 
@@ -38,14 +42,16 @@ Detail Tv Show:
 
 public class HomeActivityTest {
 
-    List<MovieEntity> movies;
-    List<TvShowEntity> tvShows;
 
     @Before
     public void setUp() throws Exception {
         ActivityScenario.launch(HomeActivity.class);
-        movies = DummyData.generateMovies();
-        tvShows = DummyData.generateTvShows();
+        IdlingRegistry.getInstance().register(EspressoIdlingResources.getEspressoIdlingResource());
+    }
+
+    @After
+    public void tearDown(){
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResources.getEspressoIdlingResource());
     }
 
     @Test
@@ -58,14 +64,12 @@ public class HomeActivityTest {
     @Test
     public void testMoviesList(){
         onView(withId(R.id.rv_movies)).check(matches(isDisplayed()));
-        onView(withId(R.id.rv_movies)).perform(RecyclerViewActions.scrollToPosition(movies.size()));
     }
 
     @Test
     public void testTVShowsList(){
         onView(withText("TV Shows")).perform(click());
         onView(withId(R.id.rv_tv_shows)).check(matches(isDisplayed()));
-        onView(withId(R.id.rv_tv_shows)).perform(RecyclerViewActions.scrollToPosition(DummyData.generateTvShows().size()));
     }
 
     @Test
@@ -85,19 +89,14 @@ public class HomeActivityTest {
         - overview
          */
 
-        MovieEntity movie = movies.get(0);
 
         onView(withId(R.id.title)).check(matches(isDisplayed()));
-        onView(withId(R.id.title)).check(matches(withText(movie.getTitle())));
 
         onView(withId(R.id.imgPoster)).check(matches(isDisplayed()));
 
         onView(withId(R.id.duration)).check(matches(isDisplayed()));
-        onView(withId(R.id.duration)).check(matches(withText(movie.getLength())));
         onView(withId(R.id.status)).check(matches(isDisplayed()));
-        onView(withId(R.id.status)).check(matches(withText(movie.getStatus())));
         onView(withId(R.id.overview)).check(matches(isDisplayed()));
-        onView(withId(R.id.overview)).check(matches(withText(movie.getOverview())));
     }
 
     @Test
@@ -119,22 +118,16 @@ public class HomeActivityTest {
         - score
          */
 
-        TvShowEntity tvShow = tvShows.get(0);
 
         onView(withId(R.id.title)).check(matches(isDisplayed()));
-        onView(withId(R.id.title)).check(matches(withText(tvShow.getTitle())));
 
         onView(withId(R.id.imgPoster)).check(matches(isDisplayed()));
 
         onView(withId(R.id.status)).check(matches(isDisplayed()));
-        onView(withId(R.id.status)).check(matches(withText(tvShow.getStatus())));
 
         onView(withId(R.id.overview)).check(matches(isDisplayed()));
-        onView(withId(R.id.overview)).check(matches(withText(tvShow.getOverview())));
 
         onView(withId(R.id.type)).check(matches(isDisplayed()));
-        onView(withId(R.id.type)).check(matches(withText(tvShow.getType())));
         onView(withId(R.id.score)).check(matches(isDisplayed()));
-        onView(withId(R.id.score)).check(matches(withText(tvShow.getScore())));
     }
 }

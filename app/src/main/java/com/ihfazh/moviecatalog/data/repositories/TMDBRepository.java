@@ -14,6 +14,7 @@ import com.ihfazh.moviecatalog.data.responses.MovieResultItem;
 import com.ihfazh.moviecatalog.data.responses.TVDetail;
 import com.ihfazh.moviecatalog.data.responses.TVListResponse;
 import com.ihfazh.moviecatalog.data.responses.TVResultItem;
+import com.ihfazh.moviecatalog.utils.EspressoIdlingResources;
 import com.ihfazh.moviecatalog.utils.dagger.modules.ApiService;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class TMDBRepository implements TMDBDataSource {
     @Override
     public LiveData<List<MovieEntity>> getMovies() {
         MutableLiveData<List<MovieEntity>> liveData = new MutableLiveData<>();
-
+        EspressoIdlingResources.increment();
         apiService.listMovie().enqueue(new Callback<MovieListResponse>() {
             @Override
             public void onResponse(Call<MovieListResponse> call, Response<MovieListResponse> response) {
@@ -53,6 +54,7 @@ public class TMDBRepository implements TMDBDataSource {
                 liveData.postValue(movieList);
                 Log.d(TAG, "onResponse: success");
                 Log.d(TAG, "onResponse: " + movieList.toString());
+                EspressoIdlingResources.decrement();
             }
 
             @Override
@@ -68,6 +70,7 @@ public class TMDBRepository implements TMDBDataSource {
     @Override
     public LiveData<List<TvShowEntity>> getTvShows() {
         MutableLiveData<List<TvShowEntity>> tvShows = new MutableLiveData<>();
+        EspressoIdlingResources.increment();
         apiService.listTv().enqueue(new Callback<TVListResponse>() {
             @Override
             public void onResponse(Call<TVListResponse> call, Response<TVListResponse> response) {
@@ -81,6 +84,7 @@ public class TMDBRepository implements TMDBDataSource {
                     tvShowEntities.add(tvShow);
                 }
                 tvShows.postValue(tvShowEntities);
+                EspressoIdlingResources.decrement();
             }
 
             @Override
@@ -93,6 +97,7 @@ public class TMDBRepository implements TMDBDataSource {
 
     public LiveData<MovieEntity> getMovieById(String id) {
         MutableLiveData<MovieEntity> movieEntity = new MutableLiveData<>();
+        EspressoIdlingResources.increment();
         apiService.getMovie(id).enqueue(new Callback<MovieDetail>() {
             @Override
             public void onResponse(Call<MovieDetail> call, Response<MovieDetail> response) {
@@ -107,6 +112,7 @@ public class TMDBRepository implements TMDBDataSource {
                 entity.setLength(String.valueOf(detail.getRuntime()));
                 entity.setStatus(detail.getStatus());
                 movieEntity.setValue(entity);
+                EspressoIdlingResources.decrement();
             }
 
             @Override
@@ -119,6 +125,7 @@ public class TMDBRepository implements TMDBDataSource {
 
     public LiveData<TvShowEntity> getTvById(String id){
         MutableLiveData<TvShowEntity> tvShowEntity = new MutableLiveData<>();
+        EspressoIdlingResources.increment();
         apiService.getTv(id).enqueue(new Callback<TVDetail>() {
             @Override
             public void onResponse(Call<TVDetail> call, Response<TVDetail> response) {
@@ -132,6 +139,7 @@ public class TMDBRepository implements TMDBDataSource {
                 entity.setId(String.valueOf(detail.getId()));
                 entity.setStatus(detail.getStatus());
                 tvShowEntity.postValue(entity);
+                EspressoIdlingResources.decrement();
             }
 
             @Override
