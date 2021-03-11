@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.ihfazh.moviecatalog.data.RemoteDataSource;
 import com.ihfazh.moviecatalog.data.datasources.TMDBDataSource;
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
@@ -28,27 +29,27 @@ import retrofit2.Response;
 
 public class TMDBRepository implements TMDBDataSource {
     private static final String TAG = "TMDBRepository";
-    private final ApiService apiService;
+    private final RemoteDataSource dataSource;
 
     @Inject
-    public TMDBRepository(ApiService apiService) {
-        this.apiService = apiService;
+    public TMDBRepository(RemoteDataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
     public LiveData<List<MovieEntity>> getMovies() {
         MutableLiveData<List<MovieEntity>> liveData = new MutableLiveData<>();
         EspressoIdlingResources.increment();
-        apiService.listMovie().enqueue(new Callback<MovieListResponse>() {
+        dataSource.listMovie(new RemoteDataSource.DataSourceCallback<List<MovieResultItem>>() {
             @Override
-            public void onResponse(Call<MovieListResponse> call, Response<MovieListResponse> response) {
+            public void onSuccess(List<MovieResultItem> response) {
                 ArrayList<MovieEntity> movieList = new ArrayList<>();
-                for (MovieResultItem item: response.body().getResults()){
-                  MovieEntity movie = new MovieEntity();
-                  movie.setTitle(item.getTitle());
-                  movie.setPosterUrl(item.getPosterPath());
-                  movie.setId(String.valueOf(item.getId()));
-                  movieList.add(movie);
+                for (MovieResultItem item: response){
+                    MovieEntity movie = new MovieEntity();
+                    movie.setTitle(item.getTitle());
+                    movie.setPosterUrl(item.getPosterPath());
+                    movie.setId(String.valueOf(item.getId()));
+                    movieList.add(movie);
                 }
 
                 liveData.postValue(movieList);
@@ -58,9 +59,8 @@ public class TMDBRepository implements TMDBDataSource {
             }
 
             @Override
-            public void onFailure(Call<MovieListResponse> call, Throwable t) {
-                Log.d(TAG, "onFailure: "  + t.toString());
-
+            public void onError(String errorMessage) {
+                Log.e(TAG, "onError: " + errorMessage);
             }
         });
 
@@ -71,11 +71,11 @@ public class TMDBRepository implements TMDBDataSource {
     public LiveData<List<TvShowEntity>> getTvShows() {
         MutableLiveData<List<TvShowEntity>> tvShows = new MutableLiveData<>();
         EspressoIdlingResources.increment();
-        apiService.listTv().enqueue(new Callback<TVListResponse>() {
+        dataSource.listTvShows(new RemoteDataSource.DataSourceCallback<List<TVResultItem>>() {
             @Override
-            public void onResponse(Call<TVListResponse> call, Response<TVListResponse> response) {
+            public void onSuccess(List<TVResultItem> response) {
                 ArrayList<TvShowEntity> tvShowEntities = new ArrayList<>();
-                for (TVResultItem item: response.body().getResults()){
+                for (TVResultItem item: response){
                     TvShowEntity tvShow = new TvShowEntity();
                     tvShow.setTitle(item.getName());
                     tvShow.setOverview(item.getOverview());
@@ -85,11 +85,13 @@ public class TMDBRepository implements TMDBDataSource {
                 }
                 tvShows.postValue(tvShowEntities);
                 EspressoIdlingResources.decrement();
+
             }
 
             @Override
-            public void onFailure(Call<TVListResponse> call, Throwable t) {
-                Log.e(TAG, "onFailure: " + t.toString());
+            public void onError(String errorMessage) {
+                Log.e(TAG, "onError: " + errorMessage );
+
             }
         });
         return tvShows ;
@@ -98,26 +100,25 @@ public class TMDBRepository implements TMDBDataSource {
     public LiveData<MovieEntity> getMovieById(String id) {
         MutableLiveData<MovieEntity> movieEntity = new MutableLiveData<>();
         EspressoIdlingResources.increment();
-        apiService.getMovie(id).enqueue(new Callback<MovieDetail>() {
+        dataSource.getMovieById(id, new RemoteDataSource.DataSourceCallback<MovieDetail>() {
             @Override
-            public void onResponse(Call<MovieDetail> call, Response<MovieDetail> response) {
-                MovieDetail detail = response.body();
+            public void onSuccess(MovieDetail response) {
                 MovieEntity entity = new MovieEntity();
-                entity.setTitle(detail.getTitle());
-                entity.setPosterUrl(detail.getPosterPath());
-                entity.setBudget(String.valueOf(detail.getBudget()));
-                entity.setScore(String.valueOf(detail.getVoteAverage()));
-                entity.setOverview(detail.getOverview());
-                entity.setLanguage(detail.getOriginalLanguage());
-                entity.setLength(String.valueOf(detail.getRuntime()));
-                entity.setStatus(detail.getStatus());
+                entity.setTitle(response.getTitle());
+                entity.setPosterUrl(response.getPosterPath());
+                entity.setBudget(String.valueOf(response.getBudget()));
+                entity.setScore(String.valueOf(response.getVoteAverage()));
+                entity.setOverview(response.getOverview());
+                entity.setLanguage(response.getOriginalLanguage());
+                entity.setLength(String.valueOf(response.getRuntime()));
+                entity.setStatus(response.getStatus());
                 movieEntity.setValue(entity);
                 EspressoIdlingResources.decrement();
             }
 
             @Override
-            public void onFailure(Call<MovieDetail> call, Throwable t) {
-                Log.e(TAG, "onFailure: " + t.toString());
+            public void onError(String errorMessage) {
+                Log.e(TAG, "onError: " + errorMessage);
             }
         });
         return movieEntity;
@@ -126,25 +127,25 @@ public class TMDBRepository implements TMDBDataSource {
     public LiveData<TvShowEntity> getTvById(String id){
         MutableLiveData<TvShowEntity> tvShowEntity = new MutableLiveData<>();
         EspressoIdlingResources.increment();
-        apiService.getTv(id).enqueue(new Callback<TVDetail>() {
+        dataSource.getTvById(id, new RemoteDataSource.DataSourceCallback<TVDetail>() {
             @Override
-            public void onResponse(Call<TVDetail> call, Response<TVDetail> response) {
-                TVDetail detail = response.body();
+            public void onSuccess(TVDetail response) {
                 TvShowEntity entity = new TvShowEntity();
-                entity.setTitle(detail.getName());
-                entity.setPoster_url(detail.getPosterPath());
-                entity.setOverview(detail.getOverview());
-                entity.setScore(String.valueOf(detail.getVoteAverage()));
-                entity.setType(detail.getType());
-                entity.setId(String.valueOf(detail.getId()));
-                entity.setStatus(detail.getStatus());
+                entity.setTitle(response.getName());
+                entity.setPoster_url(response.getPosterPath());
+                entity.setOverview(response.getOverview());
+                entity.setScore(String.valueOf(response.getVoteAverage()));
+                entity.setType(response.getType());
+                entity.setId(String.valueOf(response.getId()));
+                entity.setStatus(response.getStatus());
                 tvShowEntity.postValue(entity);
                 EspressoIdlingResources.decrement();
+
             }
 
             @Override
-            public void onFailure(Call<TVDetail> call, Throwable t) {
-                Log.e(TAG, "onFailure: " + t.toString() );
+            public void onError(String errorMessage) {
+                Log.e(TAG, "onError: " + errorMessage);
 
             }
         });

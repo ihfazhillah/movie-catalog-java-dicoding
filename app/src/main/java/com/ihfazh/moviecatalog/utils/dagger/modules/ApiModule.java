@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.Log;
 
 import com.ihfazh.moviecatalog.R;
+import com.ihfazh.moviecatalog.data.repositories.TMDBRepository;
+import com.ihfazh.moviecatalog.utils.TMDBUtils;
 
 import javax.inject.Singleton;
 
@@ -48,7 +50,7 @@ public class ApiModule {
     @Singleton
     Retrofit provideRetrofit(OkHttpClient client){
         return new Retrofit.Builder()
-                .baseUrl("https://api.themoviedb.org/3/")
+                .baseUrl(TMDBUtils.BASE_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();

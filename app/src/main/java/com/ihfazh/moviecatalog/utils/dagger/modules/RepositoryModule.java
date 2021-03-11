@@ -2,6 +2,7 @@ package com.ihfazh.moviecatalog.utils.dagger.modules;
 
 import android.content.Context;
 
+import com.ihfazh.moviecatalog.data.RemoteDataSource;
 import com.ihfazh.moviecatalog.data.repositories.TMDBRepository;
 
 import java.util.prefs.AbstractPreferences;
@@ -15,7 +16,12 @@ import dagger.Provides;
 public class RepositoryModule {
     @Singleton
     @Provides
-    TMDBRepository provideRepository(ApiService apiService){
-        return new TMDBRepository(apiService);
+    RemoteDataSource provideRemoteDataSource(ApiService apiService){
+        return new RemoteDataSource(apiService);
+    }
+    @Singleton
+    @Provides
+    TMDBRepository provideRepository(RemoteDataSource remoteDataSource){
+        return new TMDBRepository(remoteDataSource);
     }
 }
