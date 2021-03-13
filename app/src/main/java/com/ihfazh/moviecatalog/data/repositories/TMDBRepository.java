@@ -10,22 +10,15 @@ import com.ihfazh.moviecatalog.data.datasources.TMDBDataSource;
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.data.responses.MovieDetail;
-import com.ihfazh.moviecatalog.data.responses.MovieListResponse;
 import com.ihfazh.moviecatalog.data.responses.MovieResultItem;
 import com.ihfazh.moviecatalog.data.responses.TVDetail;
-import com.ihfazh.moviecatalog.data.responses.TVListResponse;
 import com.ihfazh.moviecatalog.data.responses.TVResultItem;
 import com.ihfazh.moviecatalog.utils.EspressoIdlingResources;
-import com.ihfazh.moviecatalog.utils.dagger.modules.ApiService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class TMDBRepository implements TMDBDataSource {
     private static final String TAG = "TMDBRepository";

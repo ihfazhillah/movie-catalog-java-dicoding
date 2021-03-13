@@ -2,16 +2,15 @@ package com.ihfazh.moviecatalog.ui.home.tvshows;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.ihfazh.moviecatalog.databinding.FragmentTvShowsBinding;
 import com.ihfazh.moviecatalog.ui.home.HomeViewModel;

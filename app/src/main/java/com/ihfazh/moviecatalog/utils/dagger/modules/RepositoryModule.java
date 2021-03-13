@@ -1,11 +1,7 @@
 package com.ihfazh.moviecatalog.utils.dagger.modules;
 
-import android.content.Context;
-
 import com.ihfazh.moviecatalog.data.RemoteDataSource;
 import com.ihfazh.moviecatalog.data.repositories.TMDBRepository;
-
-import java.util.prefs.AbstractPreferences;
 
 import javax.inject.Singleton;
 

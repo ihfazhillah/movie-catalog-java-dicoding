@@ -1,21 +1,39 @@
 package com.ihfazh.moviecatalog.ui.home;
 
+import android.util.Log;
+
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.ihfazh.moviecatalog.R;
 import com.ihfazh.moviecatalog.utils.EspressoIdlingResources;
+import com.ihfazh.moviecatalog.utils.TMDBUtils;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import okhttp3.mockwebserver.Dispatcher;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withSubstring;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 /*
@@ -34,18 +52,25 @@ Detail Tv Show:
  */
 
 
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class HomeActivityTest {
-
+    private static final String TAG = "HomeActivityTest";
+    private final MockWebServer webServer = new MockWebServer();
 
     @Before
     public void setUp() throws Exception {
+        setWebserverDispatcher();
+        webServer.start(8080);
+        TMDBUtils.BASE_URL = webServer.url("/").toString();
         ActivityScenario.launch(HomeActivity.class);
         IdlingRegistry.getInstance().register(EspressoIdlingResources.getEspressoIdlingResource());
+
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() throws IOException {
         IdlingRegistry.getInstance().unregister(EspressoIdlingResources.getEspressoIdlingResource());
+        webServer.shutdown();
     }
 
     @Test
@@ -85,12 +110,19 @@ public class HomeActivityTest {
 
 
         onView(withId(R.id.title)).check(matches(isDisplayed()));
+        onView(withId(R.id.title)).check(matches(withText("Fight Club")));
 
         onView(withId(R.id.imgPoster)).check(matches(isDisplayed()));
 
         onView(withId(R.id.duration)).check(matches(isDisplayed()));
+        onView(withId(R.id.duration)).check(matches(withText("139")));
+
         onView(withId(R.id.status)).check(matches(isDisplayed()));
+        onView(withId(R.id.status)).check(matches(withText("Released")));
+
         onView(withId(R.id.overview)).check(matches(isDisplayed()));
+        onView(withId(R.id.overview)).check(matches(withText("A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy. Their concept catches on, with underground \"fight clubs\" forming in every town, until an eccentric gets in the way and ignites an out-of-control spiral toward oblivion.")));
+
     }
 
     @Test
@@ -114,14 +146,91 @@ public class HomeActivityTest {
 
 
         onView(withId(R.id.title)).check(matches(isDisplayed()));
+        onView(withId(R.id.title)).check(matches(withText("Thursday at One")));
 
         onView(withId(R.id.imgPoster)).check(matches(isDisplayed()));
 
-        onView(withId(R.id.status)).check(matches(isDisplayed()));
 
         onView(withId(R.id.overview)).check(matches(isDisplayed()));
+        onView(withId(R.id.overview)).check(matches(withSubstring("Thursday at One was an Australian daytime")));
+
+        // we need to scroll, the overview is much.
+        onView(withId(R.id.score)).perform(scrollTo());
 
         onView(withId(R.id.type)).check(matches(isDisplayed()));
+        onView(withId(R.id.type)).check(matches(withText("Scripted")));
         onView(withId(R.id.score)).check(matches(isDisplayed()));
+        onView(withId(R.id.score)).check(matches(withText("0.0")));
+
+        onView(withId(R.id.status)).check(matches(isDisplayed()));
+        onView(withId(R.id.status)).check(matches(withText("Ended")));
+    }
+
+    @NotNull
+    private String getFileContent(String fileName) throws IOException {
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(fileName);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+        StringBuilder file = new StringBuilder();
+        String line = reader.readLine();
+        while (line != null){
+            file.append(line);
+            line = reader.readLine();
+        }
+        return file.toString();
+    }
+    private void setWebserverDispatcher() {
+        webServer.setDispatcher(new Dispatcher() {
+            @NotNull
+            @Override
+            public MockResponse dispatch(@NotNull RecordedRequest recordedRequest) throws InterruptedException {
+                Log.d(TAG, "dispatch: " + recordedRequest.getPath());
+                String path = recordedRequest.getPath();
+                assert path != null;
+                if (path.contains("tv/popular")){
+                    Log.d(TAG, "TV Popular: " + recordedRequest.getPath());
+                    try {
+                        return new MockResponse()
+                                .setResponseCode(200)
+                                .setBody(getFileContent("popular_tv_200_response.json"));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "error tv: ", e);
+                    }
+                } else if(path.contains("movie/popular")){
+                    Log.d(TAG, "Movie Popular: " + recordedRequest.getPath());
+                    try {
+                        return new MockResponse()
+                                .setResponseCode(200)
+                                .setBody(getFileContent("popular_movies_200_response.json"));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "error movie: ", e);
+                    }
+                } else if (path.contains("movie/")) {
+                    try {
+                        return new MockResponse()
+                                .setResponseCode(200)
+                                .setBody(getFileContent("detail_movie_200_response.json"));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "error movie: ", e);
+                    }
+                }
+             else if (path.contains("tv/")) {
+
+                    try {
+                        return new MockResponse()
+                                .setResponseCode(200)
+                                .setBody(getFileContent("detail_tv_200_response.json"));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "error movie: ", e);
+                    }
+            }
+                Log.d(TAG, "Not Found" + recordedRequest.getPath());
+                return new MockResponse().setResponseCode(500);
+            }
+        });
     }
 }

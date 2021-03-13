@@ -1,7 +1,5 @@
 package com.ihfazh.moviecatalog.utils;
 
-import androidx.annotation.NonNull;
-import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.idling.CountingIdlingResource;
 

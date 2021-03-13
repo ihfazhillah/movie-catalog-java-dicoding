@@ -1,7 +1,8 @@
 package com.ihfazh.moviecatalog.data.responses;
 
-import java.util.List;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class MovieDetail{
 

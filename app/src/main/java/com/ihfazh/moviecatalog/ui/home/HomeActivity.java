@@ -1,8 +1,8 @@
 package com.ihfazh.moviecatalog.ui.home;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.ihfazh.moviecatalog.databinding.ActivityHomeBinding;
 

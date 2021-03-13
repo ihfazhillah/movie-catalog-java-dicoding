@@ -1,12 +1,11 @@
 package com.ihfazh.moviecatalog.ui.tvshows;
 
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.os.Bundle;
-
 import com.bumptech.glide.Glide;
-import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.databinding.ActivityDetailTvShowBinding;
 import com.ihfazh.moviecatalog.ui.viewmodels.ViewModelFactory;
 import com.ihfazh.moviecatalog.utils.TMDBUtils;

@@ -5,8 +5,6 @@ import com.ihfazh.moviecatalog.data.responses.MovieListResponse;
 import com.ihfazh.moviecatalog.data.responses.TVDetail;
 import com.ihfazh.moviecatalog.data.responses.TVListResponse;
 
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;

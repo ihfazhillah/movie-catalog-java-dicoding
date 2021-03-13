@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.ihfazh.moviecatalog.R;
-import com.ihfazh.moviecatalog.data.repositories.TMDBRepository;
 import com.ihfazh.moviecatalog.utils.TMDBUtils;
 
 import javax.inject.Singleton;
@@ -16,7 +15,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Url;
 
 @Module
 public class ApiModule {
