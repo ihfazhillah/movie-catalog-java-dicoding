@@ -112,6 +112,7 @@ public class TMDBRepository implements TMDBDataSource {
                 entity.setLanguage(response.getOriginalLanguage());
                 entity.setLength(String.valueOf(response.getRuntime()));
                 entity.setStatus(response.getStatus());
+                entity.setId(String.valueOf(response.getId()));
                 movieEntity.setValue(entity);
                 EspressoIdlingResources.decrement();
             }

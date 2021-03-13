@@ -6,30 +6,33 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.Observer;
 import androidx.test.espresso.IdlingRegistry;
 
+import com.google.gson.Gson;
 import com.ihfazh.moviecatalog.data.RemoteDataSource;
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
+import com.ihfazh.moviecatalog.data.responses.MovieDetail;
 import com.ihfazh.moviecatalog.data.responses.MovieListResponse;
+import com.ihfazh.moviecatalog.data.responses.MovieResultItem;
 import com.ihfazh.moviecatalog.utils.EspressoIdlingResources;
 import com.ihfazh.moviecatalog.utils.TMDBUtils;
 import com.ihfazh.moviecatalog.utils.dagger.modules.ApiService;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -45,42 +48,55 @@ import static retrofit2.Response.*;
 public class TMDBRepositoryTest {
 
 
-    private MockWebServer server;
     private TMDBRepository repository;
-    private ApiService service;
 
     @Mock
-    EspressoIdlingResources espressoIdlingResources;
+    RemoteDataSource remoteDataSource;
+
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Before
     public void setUp() throws Exception {
-        server = new MockWebServer();
-        server.start();
-        TMDBUtils.BASE_URL = server.url("/").toString();
-
-        service = new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(TMDBUtils.BASE_URL)
-                .build()
-                .create(ApiService.class);
-
-        RemoteDataSource remoteDataSource = new RemoteDataSource(service);
         repository = new TMDBRepository(remoteDataSource);
-//        IdlingRegistry.getInstance().register(EspressoIdlingResources.getEspressoIdlingResource());
-
-    }
-
-    @After
-    public void shutDown() throws IOException {
-        server.shutdown();
-//        IdlingRegistry.getInstance().unregister(EspressoIdlingResources.getEspressoIdlingResource());
     }
 
     @Test
     public void getMovies() throws IOException {
+        Mockito.doAnswer(invocation -> {
+            String responseString = getFileContent("popular_movies_200_response.json");
+            MovieListResponse listResponse = new Gson().fromJson(responseString, MovieListResponse.class);
+            RemoteDataSource.DataSourceCallback<List<MovieResultItem>> callback = (RemoteDataSource.DataSourceCallback<List<MovieResultItem>>) invocation.getArgument(0);
+            callback.onSuccess(listResponse.getResults());
+            return null;
+        }).when(remoteDataSource).listMovie(Mockito.any(RemoteDataSource.DataSourceCallback.class));
+        
+        repository.getMovies();
+        assert Objects.requireNonNull(repository.getMovies().getValue()).size() > 1;
+    }
 
+
+    @Test
+    public void getTvShows() {
+    }
+
+    @Test
+    public void getMovieById() {
+        Mockito.doAnswer(invocation -> {
+            String responseString = getFileContent("detail_movie_200_response.json");
+            MovieDetail response = new Gson().fromJson(responseString, MovieDetail.class);
+            RemoteDataSource.DataSourceCallback callback = (RemoteDataSource.DataSourceCallback) invocation.getArgument(1);
+            callback.onSuccess(response);
+            return null;
+        }).when(remoteDataSource).getMovieById(Mockito.eq("1"), Mockito.any(RemoteDataSource.DataSourceCallback.class));
+
+        repository.getMovieById("1");
+        MovieEntity entity = repository.getMovieById("1").getValue();
+        Assert.assertNotNull(entity.getId());
+    }
+
+    @Test
+    public void getTvById() {
     }
 
     @NotNull
@@ -95,17 +111,5 @@ public class TMDBRepositoryTest {
             line = reader.readLine();
         }
         return file.toString();
-    }
-
-    @Test
-    public void getTvShows() {
-    }
-
-    @Test
-    public void getMovieById() {
-    }
-
-    @Test
-    public void getTvById() {
     }
 }
