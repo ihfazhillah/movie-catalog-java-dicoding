@@ -42,16 +42,16 @@ public class TMDBRepositoryTest {
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         repository = new TMDBRepository(remoteDataSource);
     }
 
     @Test
-    public void getMovies() throws IOException {
+    public void getMovies() {
         Mockito.doAnswer(invocation -> {
             String responseString = getFileContent("popular_movies_200_response.json");
             MovieListResponse listResponse = new Gson().fromJson(responseString, MovieListResponse.class);
-            RemoteDataSource.DataSourceCallback<List<MovieResultItem>> callback = (RemoteDataSource.DataSourceCallback<List<MovieResultItem>>) invocation.getArgument(0);
+            RemoteDataSource.DataSourceCallback<List<MovieResultItem>> callback =  invocation.getArgument(0);
             callback.onSuccess(listResponse.getResults());
             return null;
         }).when(remoteDataSource).listMovie(Mockito.any(RemoteDataSource.DataSourceCallback.class));
@@ -82,13 +82,14 @@ public class TMDBRepositoryTest {
         Mockito.doAnswer(invocation -> {
             String responseString = getFileContent("detail_movie_200_response.json");
             MovieDetail response = new Gson().fromJson(responseString, MovieDetail.class);
-            RemoteDataSource.DataSourceCallback callback = (RemoteDataSource.DataSourceCallback) invocation.getArgument(1);
+            RemoteDataSource.DataSourceCallback callback =  invocation.getArgument(1);
             callback.onSuccess(response);
             return null;
         }).when(remoteDataSource).getMovieById(Mockito.eq("1"), Mockito.any(RemoteDataSource.DataSourceCallback.class));
 
         repository.getMovieById("1");
         MovieEntity entity = repository.getMovieById("1").getValue();
+        Assert.assertNotNull(entity);
         Assert.assertNotNull(entity.getId());
     }
 
@@ -97,13 +98,14 @@ public class TMDBRepositoryTest {
         Mockito.doAnswer(invocation -> {
             String responseString = getFileContent("detail_tv_200_response.json");
             TVDetail response = new Gson().fromJson(responseString, TVDetail.class);
-            RemoteDataSource.DataSourceCallback callback = (RemoteDataSource.DataSourceCallback) invocation.getArgument(1);
+            RemoteDataSource.DataSourceCallback callback =  invocation.getArgument(1);
             callback.onSuccess(response);
             return null;
         }).when(remoteDataSource).getTvById(Mockito.eq("1"), Mockito.any(RemoteDataSource.DataSourceCallback.class));
 
         repository.getTvById("1");
         TvShowEntity entity = repository.getTvById("1").getValue();
+        Assert.assertNotNull(entity);
         Assert.assertNotNull(entity.getId());
     }
 
