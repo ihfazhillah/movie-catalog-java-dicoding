@@ -1,23 +1,18 @@
 package com.ihfazh.moviecatalog.data.repositories;
 
-import android.os.SystemClock;
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.lifecycle.Observer;
-import androidx.test.espresso.IdlingRegistry;
 
 import com.google.gson.Gson;
 import com.ihfazh.moviecatalog.data.RemoteDataSource;
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
+import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.data.responses.MovieDetail;
 import com.ihfazh.moviecatalog.data.responses.MovieListResponse;
 import com.ihfazh.moviecatalog.data.responses.MovieResultItem;
-import com.ihfazh.moviecatalog.utils.EspressoIdlingResources;
-import com.ihfazh.moviecatalog.utils.TMDBUtils;
-import com.ihfazh.moviecatalog.utils.dagger.modules.ApiService;
+import com.ihfazh.moviecatalog.data.responses.TVDetail;
+import com.ihfazh.moviecatalog.data.responses.TVListResponse;
 
 import org.jetbrains.annotations.NotNull;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,16 +28,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Objects;
-
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-import static retrofit2.Response.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TMDBRepositoryTest {
@@ -78,6 +63,18 @@ public class TMDBRepositoryTest {
 
     @Test
     public void getTvShows() {
+        Mockito.doAnswer(invocation -> {
+            String responseString = getFileContent("popular_tv_200_response.json");
+            TVListResponse  response = new Gson().fromJson(responseString, TVListResponse.class);
+            RemoteDataSource.DataSourceCallback callback = invocation.getArgument(0);
+            callback.onSuccess(response.getResults());
+            return null;
+        }).when(remoteDataSource).listTvShows(Mockito.any(RemoteDataSource.DataSourceCallback.class));
+
+        repository.getTvShows();
+        List<TvShowEntity> tvShows = repository.getTvShows().getValue();
+        assert tvShows != null;
+        Assert.assertNotEquals(tvShows.size(), 0);
     }
 
     @Test
@@ -97,6 +94,17 @@ public class TMDBRepositoryTest {
 
     @Test
     public void getTvById() {
+        Mockito.doAnswer(invocation -> {
+            String responseString = getFileContent("detail_tv_200_response.json");
+            TVDetail response = new Gson().fromJson(responseString, TVDetail.class);
+            RemoteDataSource.DataSourceCallback callback = (RemoteDataSource.DataSourceCallback) invocation.getArgument(1);
+            callback.onSuccess(response);
+            return null;
+        }).when(remoteDataSource).getTvById(Mockito.eq("1"), Mockito.any(RemoteDataSource.DataSourceCallback.class));
+
+        repository.getTvById("1");
+        TvShowEntity entity = repository.getTvById("1").getValue();
+        Assert.assertNotNull(entity.getId());
     }
 
     @NotNull
