@@ -1,10 +1,10 @@
 package com.ihfazh.moviecatalog.ui.movie;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.ihfazh.moviecatalog.databinding.ActivityDetailMovieBinding;
@@ -36,6 +36,13 @@ public class DetailMovieActivity extends AppCompatActivity {
 
         DetailMovieViewModel viewModel = new ViewModelProvider(this, factory).get(DetailMovieViewModel.class);
 
+        viewModel.setIsLoading(true);
+        viewModel.getIsLoading().observe(this, isLoading -> {
+            if (!isLoading){
+                binding.shimmerViewContainer.hideShimmer();
+            }
+        });
+
         viewModel.getMovieById(movieTitle).observe(this, movie -> {
             binding.title.setText(movie.getTitle());
             binding.overview.setText(movie.getOverview());
@@ -49,6 +56,7 @@ public class DetailMovieActivity extends AppCompatActivity {
             Glide.with(this)
                     .load(TMDBUtils.getFullImagePath(movie.getPosterUrl()))
                     .into(binding.imgPoster);
+            viewModel.setIsLoading(false);
 
         });
 

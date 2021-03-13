@@ -5,17 +5,11 @@ import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 
 import com.ihfazh.moviecatalog.R;
-import com.ihfazh.moviecatalog.data.entities.MovieEntity;
-import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
-import com.ihfazh.moviecatalog.utils.DummyData;
 import com.ihfazh.moviecatalog.utils.EspressoIdlingResources;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.util.List;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -27,7 +21,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 /*
 Home:
 - Memiliki dua tab
-- tab default menampilkan 10 data movie
+- tab default menampilkan list data movie
 - ketika tab tv movies di klik, maka akan tampilkan data tv movies 10 data
 
 Detail Movie:
