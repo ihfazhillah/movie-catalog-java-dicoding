@@ -123,6 +123,16 @@ public class HomeActivityTest {
         onView(withId(R.id.overview)).check(matches(isDisplayed()));
         onView(withId(R.id.overview)).check(matches(withText("A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy. Their concept catches on, with underground \"fight clubs\" forming in every town, until an eccentric gets in the way and ignites an out-of-control spiral toward oblivion.")));
 
+        // bahasa
+        onView(withId(R.id.language)).check(matches(isDisplayed()));
+        onView(withId(R.id.language)).check(matches(withText("en")));
+        // budget
+        onView(withId(R.id.budget)).check(matches(isDisplayed()));
+        onView(withId(R.id.budget)).check(matches(withText("63000000")));
+        // score
+        onView(withId(R.id.score)).check(matches(isDisplayed()));
+        onView(withId(R.id.score)).check(matches(withText("8.4")));
+
     }
 
     @Test
