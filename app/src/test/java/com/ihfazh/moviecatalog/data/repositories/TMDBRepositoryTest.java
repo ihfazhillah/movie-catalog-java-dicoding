@@ -57,6 +57,10 @@ public class TMDBRepositoryTest {
         }).when(remoteDataSource).listMovie(Mockito.any(RemoteDataSource.DataSourceCallback.class));
         
         repository.getMovies();
+
+        // method verify ini untuk memastikan, apakah listMovie ini bener bener terpanggil atau tidak.
+        // ketika repository.getMovies dipanggil.
+        Mockito.verify(remoteDataSource).listMovie(Mockito.any(RemoteDataSource.DataSourceCallback.class));
         assert Objects.requireNonNull(repository.getMovies().getValue()).size() > 1;
     }
 
@@ -72,6 +76,8 @@ public class TMDBRepositoryTest {
         }).when(remoteDataSource).listTvShows(Mockito.any(RemoteDataSource.DataSourceCallback.class));
 
         repository.getTvShows();
+
+        Mockito.verify(remoteDataSource).listTvShows(Mockito.any());
         List<TvShowEntity> tvShows = repository.getTvShows().getValue();
         assert tvShows != null;
         Assert.assertNotEquals(tvShows.size(), 0);
@@ -88,6 +94,8 @@ public class TMDBRepositoryTest {
         }).when(remoteDataSource).getMovieById(Mockito.eq("1"), Mockito.any(RemoteDataSource.DataSourceCallback.class));
 
         repository.getMovieById("1");
+
+        Mockito.verify(remoteDataSource).getMovieById(Mockito.eq("1"), Mockito.any());
         MovieEntity entity = repository.getMovieById("1").getValue();
         Assert.assertNotNull(entity);
         Assert.assertNotNull(entity.getId());
@@ -104,6 +112,8 @@ public class TMDBRepositoryTest {
         }).when(remoteDataSource).getTvById(Mockito.eq("1"), Mockito.any(RemoteDataSource.DataSourceCallback.class));
 
         repository.getTvById("1");
+
+        Mockito.verify(remoteDataSource).getTvById(Mockito.eq("1"), Mockito.any());
         TvShowEntity entity = repository.getTvById("1").getValue();
         Assert.assertNotNull(entity);
         Assert.assertNotNull(entity.getId());
