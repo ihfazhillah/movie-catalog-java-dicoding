@@ -3,7 +3,7 @@ package com.ihfazh.moviecatalog.data.repositories;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
@@ -19,7 +19,6 @@ import com.ihfazh.moviecatalog.data.responses.TVDetail;
 import com.ihfazh.moviecatalog.data.responses.TVResultItem;
 import com.ihfazh.moviecatalog.utils.EspressoIdlingResources;
 
-import java.util.List;
 import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
@@ -78,7 +77,6 @@ public class TMDBRepository implements TMDBDataSource {
 
     @Override
     public LiveData<PagedList<TvShowEntity>> getTvShows() {
-        MutableLiveData<List<TvShowEntity>> tvShows = new MutableLiveData<>();
         EspressoIdlingResources.increment();
         DataSource.Factory<Integer, TvShowEntity> factory = dataSource.listTvShows().map(TMDBRepository::apply);
         PagedList.Config config = new PagedList.Config.Builder()
@@ -91,66 +89,108 @@ public class TMDBRepository implements TMDBDataSource {
     }
 
     public LiveData<MovieEntity> getMovieById(String id) {
-        MutableLiveData<MovieEntity> movieEntity = new MutableLiveData<>();
-        EspressoIdlingResources.increment();
-        dataSource.getMovieById(id, new RemoteDataSource.DataSourceCallback<MovieDetail>() {
-            @Override
-            public void onSuccess(MovieDetail response) {
-                MovieEntity entity = new MovieEntity();
-                entity.setTitle(response.getTitle());
-                entity.setPosterUrl(response.getPosterPath());
-                entity.setBudget(String.valueOf(response.getBudget()));
-                entity.setScore(String.valueOf(response.getVoteAverage()));
-                entity.setOverview(response.getOverview());
-                entity.setLanguage(response.getOriginalLanguage());
-                entity.setLength(String.valueOf(response.getRuntime()));
-                entity.setStatus(response.getStatus());
-                entity.setId(String.valueOf(response.getId()));
-                movieEntity.setValue(entity);
-                Executors.newSingleThreadExecutor().execute(() -> {
-                    localSource.movieDao().insert(entity);
-                });
-                EspressoIdlingResources.decrement();
-            }
+        MediatorLiveData<MovieEntity> result = new MediatorLiveData<>();
+        LiveData<MovieEntity> dbSource = localSource.movieDao().getMovie(id);
+        result.addSource(
+                dbSource,
+                newData -> {
+                    if (newData != null){
+                        result.setValue(newData);
+                        result.removeSource(dbSource);
+                        Log.d(TAG, "getMovieById: get from db");
+                    } else {
+                        Log.d(TAG, "getMovieById: get from remote");
+                        EspressoIdlingResources.increment();
+                        dataSource.getMovieById(id, new RemoteDataSource.DataSourceCallback<MovieDetail>() {
+                            @Override
+                            public void onSuccess(MovieDetail response) {
+                                MovieEntity entity = new MovieEntity();
+                                entity.setTitle(response.getTitle());
+                                entity.setPosterUrl(response.getPosterPath());
+                                entity.setBudget(String.valueOf(response.getBudget()));
+                                entity.setScore(String.valueOf(response.getVoteAverage()));
+                                entity.setOverview(response.getOverview());
+                                entity.setLanguage(response.getOriginalLanguage());
+                                entity.setLength(String.valueOf(response.getRuntime()));
+                                entity.setStatus(response.getStatus());
+                                entity.setId(String.valueOf(response.getId()));
+                                result.setValue(entity);
 
-            @Override
-            public void onError(String errorMessage) {
-                Log.e(TAG, "onError: " + errorMessage);
-            }
-        });
-        return movieEntity;
+                                Executors.newSingleThreadExecutor().execute(() -> {
+                                    localSource.movieDao().insert(entity);
+                                });
+
+                                EspressoIdlingResources.decrement();
+                                result.removeSource(dbSource);
+                            }
+
+                            @Override
+                            public void onError(String errorMessage) {
+                                Log.e(TAG, "onError: " + errorMessage);
+                            }
+                        });
+                    }
+                }
+        );
+        EspressoIdlingResources.increment();
+        return result;
     }
 
     public LiveData<TvShowEntity> getTvById(String id){
-        MutableLiveData<TvShowEntity> tvShowEntity = new MutableLiveData<>();
-        EspressoIdlingResources.increment();
-        dataSource.getTvById(id, new RemoteDataSource.DataSourceCallback<TVDetail>() {
-            @Override
-            public void onSuccess(TVDetail response) {
-                TvShowEntity entity = new TvShowEntity();
-                entity.setTitle(response.getName());
-                entity.setPoster_url(response.getPosterPath());
-                entity.setOverview(response.getOverview());
-                entity.setScore(String.valueOf(response.getVoteAverage()));
-                entity.setType(response.getType());
-                entity.setId(String.valueOf(response.getId()));
-                entity.setStatus(response.getStatus());
+        MediatorLiveData<TvShowEntity> result = new MediatorLiveData<>();
+        LiveData<TvShowEntity> dbSource = localSource.tvDao().getTv(id);
+        result.addSource(
+                dbSource,
+                newData -> {
+                    if (newData != null){
+                        result.setValue(newData);
+                        result.removeSource(dbSource);
+                    } else {
+                        EspressoIdlingResources.increment();
+                        dataSource.getTvById(id, new RemoteDataSource.DataSourceCallback<TVDetail>() {
+                            @Override
+                            public void onSuccess(TVDetail response) {
+                                TvShowEntity entity = new TvShowEntity();
+                                entity.setTitle(response.getName());
+                                entity.setPoster_url(response.getPosterPath());
+                                entity.setOverview(response.getOverview());
+                                entity.setScore(String.valueOf(response.getVoteAverage()));
+                                entity.setType(response.getType());
+                                entity.setId(String.valueOf(response.getId()));
+                                entity.setStatus(response.getStatus());
 
-                Executors.newSingleThreadExecutor().execute(() -> {
-                    localSource.tvDao().insert(entity);
-                });
+                                result.setValue(entity);
+                                Executors.newSingleThreadExecutor().execute(() -> {
+                                    localSource.tvDao().insert(entity);
+                                });
 
-                tvShowEntity.postValue(entity);
-                EspressoIdlingResources.decrement();
+                                EspressoIdlingResources.decrement();
+                                result.removeSource(dbSource);
 
-            }
+                            }
 
-            @Override
-            public void onError(String errorMessage) {
-                Log.e(TAG, "onError: " + errorMessage);
+                            @Override
+                            public void onError(String errorMessage) {
+                                Log.e(TAG, "onError: " + errorMessage);
 
-            }
-        });
-        return tvShowEntity;
+                            }
+                        });
+                    }
+                }
+        );
+        return result;
+    }
+
+    public void updateMovie(MovieEntity entity) {
+        Executors.newSingleThreadExecutor().execute(
+                () -> {localSource.movieDao().update(entity);}
+        );
+    }
+
+    public void updateTv(TvShowEntity entity) {
+        Executors.newSingleThreadExecutor().execute(
+                () -> {localSource.tvDao().update(entity);}
+        );
+
     }
 }

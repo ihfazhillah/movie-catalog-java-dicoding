@@ -1,5 +1,6 @@
 package com.ihfazh.moviecatalog.data.local;
 
+import androidx.lifecycle.LiveData;
 import androidx.paging.DataSource;
 import androidx.room.Dao;
 import androidx.room.Insert;
@@ -19,4 +20,7 @@ public interface MovieDao {
 
     @Query("select * from movie where bookmarked = 1")
     DataSource.Factory<Integer, MovieEntity> getBookmarkedMovie();
+
+    @Query("select * from movie where id = :id")
+    LiveData<MovieEntity> getMovie(String id);
 }

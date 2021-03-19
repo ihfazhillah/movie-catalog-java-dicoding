@@ -1,5 +1,6 @@
 package com.ihfazh.moviecatalog.data.local;
 
+import androidx.lifecycle.LiveData;
 import androidx.paging.DataSource;
 import androidx.room.Dao;
 import androidx.room.Insert;
@@ -19,4 +20,7 @@ public interface TVShowDao {
 
     @Query("select * from tv_show where bookmarked = 1")
     DataSource.Factory<Integer, TvShowEntity> getBookmarkedTvShows();
+
+    @Query("select * from tv_show where id = :id")
+    LiveData<TvShowEntity> getTv(String id);
 }
