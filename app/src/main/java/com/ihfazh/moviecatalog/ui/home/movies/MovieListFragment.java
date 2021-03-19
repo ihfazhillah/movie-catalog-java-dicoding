@@ -2,6 +2,7 @@ package com.ihfazh.moviecatalog.ui.home.movies;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,14 +63,19 @@ public class MovieListFragment extends Fragment implements OnListItemClicked {
 
         HomeViewModel viewModel = new ViewModelProvider(requireActivity(), factory).get(HomeViewModel.class);
 
-        binding.rvMovies.setHasFixedSize(true);
-        binding.rvMovies.setLayoutManager(new LinearLayoutManager(getContext()));
+        // harus dihilangkan. Kenapa? Karena size udah gak fixed kan? Bisa bertambah terus.
+//        binding.rvMovies.setHasFixedSize(true);
+
+        binding.rvMovies.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         MovieListAdapter adapter = new MovieListAdapter();
-        adapter.setListener(this);
-        viewModel.loadMovies().observe(getViewLifecycleOwner(), adapter::setMovieEntities);
-
         binding.rvMovies.setAdapter(adapter);
+        adapter.setListener(this);
+        viewModel.loadMovies().observe(getViewLifecycleOwner(), movieEntities -> {
+            adapter.submitList(movieEntities);
+            Log.d(TAG, "onChanged: " + movieEntities.toString());
+        });
+
     }
 
     @Override

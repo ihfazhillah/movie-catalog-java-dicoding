@@ -8,13 +8,14 @@ import com.ihfazh.moviecatalog.data.responses.TVListResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiService {
     @GET("tv/popular")
     Call<TVListResponse> listTv();
 
     @GET("movie/popular")
-    Call<MovieListResponse> listMovie();
+    Call<MovieListResponse> listMovie(@Query("page") String page);
 
     @GET("movie/{id}")
     Call<MovieDetail> getMovie(@Path("id") String id);

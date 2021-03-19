@@ -4,11 +4,14 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 
-import com.ihfazh.moviecatalog.data.RemoteDataSource;
 import com.ihfazh.moviecatalog.data.datasources.TMDBDataSource;
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
+import com.ihfazh.moviecatalog.data.remote.RemoteDataSource;
 import com.ihfazh.moviecatalog.data.responses.MovieDetail;
 import com.ihfazh.moviecatalog.data.responses.MovieResultItem;
 import com.ihfazh.moviecatalog.data.responses.TVDetail;
@@ -29,35 +32,31 @@ public class TMDBRepository implements TMDBDataSource {
         this.dataSource = dataSource;
     }
 
+    private static MovieEntity apply(MovieResultItem item) {
+        return new MovieEntity(
+                String.valueOf(item.getId()),
+                item.getPosterPath(),
+                item.getTitle(),
+                null,
+                null,
+                null,
+                null,
+                item.getOverview(),
+                null
+        );
+    }
+
     @Override
-    public LiveData<List<MovieEntity>> getMovies() {
-        MutableLiveData<List<MovieEntity>> liveData = new MutableLiveData<>();
-        EspressoIdlingResources.increment();
-        dataSource.listMovie(new RemoteDataSource.DataSourceCallback<List<MovieResultItem>>() {
-            @Override
-            public void onSuccess(List<MovieResultItem> response) {
-                ArrayList<MovieEntity> movieList = new ArrayList<>();
-                for (MovieResultItem item: response){
-                    MovieEntity movie = new MovieEntity();
-                    movie.setTitle(item.getTitle());
-                    movie.setPosterUrl(item.getPosterPath());
-                    movie.setId(String.valueOf(item.getId()));
-                    movieList.add(movie);
-                }
+    public LiveData<PagedList<MovieEntity>> getMovies() {
 
-                liveData.postValue(movieList);
-                Log.d(TAG, "onResponse: success");
-                Log.d(TAG, "onResponse: " + movieList.toString());
-                EspressoIdlingResources.decrement();
-            }
+        DataSource.Factory<Integer, MovieEntity> liveData = dataSource.listMovie().map(TMDBRepository::apply);
 
-            @Override
-            public void onError(String errorMessage) {
-                Log.e(TAG, "onError: " + errorMessage);
-            }
-        });
-
-        return liveData;
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(true)
+                .setPageSize(20)
+                .setInitialLoadSizeHint(20).build();
+        
+        return new LivePagedListBuilder<>(liveData, config).build();
     }
 
     @Override

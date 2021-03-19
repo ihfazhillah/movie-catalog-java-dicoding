@@ -43,4 +43,6 @@ ext {
     mockitoVersion = "2.25.0"
     idleResourceVersion = "3.2.0"
     shimmerVersion = "0.5.0"
+
+    pagingVersion = "2.1.2"
 }

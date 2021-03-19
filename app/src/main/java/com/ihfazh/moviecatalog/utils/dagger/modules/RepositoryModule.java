@@ -1,6 +1,6 @@
 package com.ihfazh.moviecatalog.utils.dagger.modules;
 
-import com.ihfazh.moviecatalog.data.RemoteDataSource;
+import com.ihfazh.moviecatalog.data.remote.RemoteDataSource;
 import com.ihfazh.moviecatalog.data.repositories.TMDBRepository;
 
 import javax.inject.Singleton;

@@ -14,6 +14,18 @@ public class MovieEntity {
     public MovieEntity() {
     }
 
+    public MovieEntity(String id, String posterUrl, String title, String length, String status, String language, String budget, String overview, String score) {
+        this.posterUrl = posterUrl;
+        this.title = title;
+        this.length = length;
+        this.status = status;
+        this.language = language;
+        this.budget = budget;
+        this.overview = overview;
+        this.score = score;
+        this.id = id;
+    }
+
     public MovieEntity(String posterUrl, String title, String length, String status, String language, String budget, String overview, String score) {
         this.posterUrl = posterUrl;
         this.title = title;
