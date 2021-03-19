@@ -21,6 +21,16 @@ public class TvShowEntity {
         this.score = score;
     }
 
+    public TvShowEntity(String id, String poster_url, String title, String status, String type, String overview, String score) {
+        this.poster_url = poster_url;
+        this.title = title;
+        this.status = status;
+        this.type = type;
+        this.overview = overview;
+        this.score = score;
+        this.id = id;
+    }
+
     public String getPoster_url() {
         return poster_url;
     }

@@ -18,7 +18,6 @@ import com.ihfazh.moviecatalog.data.responses.TVDetail;
 import com.ihfazh.moviecatalog.data.responses.TVResultItem;
 import com.ihfazh.moviecatalog.utils.EspressoIdlingResources;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -46,47 +45,45 @@ public class TMDBRepository implements TMDBDataSource {
         );
     }
 
+    private static TvShowEntity apply(TVResultItem item){
+        return new TvShowEntity(
+                String.valueOf(item.getId()),
+                item.getPosterPath(),
+                item.getName(),
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
     @Override
     public LiveData<PagedList<MovieEntity>> getMovies() {
 
+        EspressoIdlingResources.increment();
         DataSource.Factory<Integer, MovieEntity> liveData = dataSource.listMovie().map(TMDBRepository::apply);
 
         PagedList.Config config = new PagedList.Config.Builder()
                 .setEnablePlaceholders(true)
                 .setPageSize(20)
                 .setInitialLoadSizeHint(20).build();
-        
+        EspressoIdlingResources.decrement();
+
         return new LivePagedListBuilder<>(liveData, config).build();
     }
 
     @Override
-    public LiveData<List<TvShowEntity>> getTvShows() {
+    public LiveData<PagedList<TvShowEntity>> getTvShows() {
         MutableLiveData<List<TvShowEntity>> tvShows = new MutableLiveData<>();
         EspressoIdlingResources.increment();
-        dataSource.listTvShows(new RemoteDataSource.DataSourceCallback<List<TVResultItem>>() {
-            @Override
-            public void onSuccess(List<TVResultItem> response) {
-                ArrayList<TvShowEntity> tvShowEntities = new ArrayList<>();
-                for (TVResultItem item: response){
-                    TvShowEntity tvShow = new TvShowEntity();
-                    tvShow.setTitle(item.getName());
-                    tvShow.setOverview(item.getOverview());
-                    tvShow.setId(String.valueOf(item.getId()));
-                    tvShow.setPoster_url(item.getPosterPath());
-                    tvShowEntities.add(tvShow);
-                }
-                tvShows.postValue(tvShowEntities);
-                EspressoIdlingResources.decrement();
-
-            }
-
-            @Override
-            public void onError(String errorMessage) {
-                Log.e(TAG, "onError: " + errorMessage );
-
-            }
-        });
-        return tvShows ;
+        DataSource.Factory<Integer, TvShowEntity> factory = dataSource.listTvShows().map(TMDBRepository::apply);
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(true)
+                .setPageSize(20)
+                .setInitialLoadSizeHint(20)
+                .build();
+        EspressoIdlingResources.decrement();
+        return new LivePagedListBuilder<>(factory, config).build();
     }
 
     public LiveData<MovieEntity> getMovieById(String id) {

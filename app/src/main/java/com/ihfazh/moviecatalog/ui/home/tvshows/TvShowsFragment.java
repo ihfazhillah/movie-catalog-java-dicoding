@@ -72,7 +72,6 @@ public class TvShowsFragment extends Fragment {
                 .build();
         component.inject(this);
 
-        binding.rvTvShows.setHasFixedSize(true);
         binding.rvTvShows.setLayoutManager(new LinearLayoutManager(getContext()));
 
         TvShowsAdapter adapter = new TvShowsAdapter();
@@ -84,7 +83,7 @@ public class TvShowsFragment extends Fragment {
 
 
         HomeViewModel modelView = new ViewModelProvider(requireActivity(), factory).get(HomeViewModel.class);
-        modelView.loadTvShows().observe(getViewLifecycleOwner(), adapter::setTvShows);
+        modelView.loadTvShows().observe(getViewLifecycleOwner(), adapter::submitList);
 
         binding.rvTvShows.setAdapter(adapter);
     }

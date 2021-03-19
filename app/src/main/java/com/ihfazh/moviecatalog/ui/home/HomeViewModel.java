@@ -10,8 +10,6 @@ import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.data.repositories.TMDBRepository;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 public class HomeViewModel extends ViewModel {
@@ -28,7 +26,7 @@ public class HomeViewModel extends ViewModel {
         return repository.getMovies();
     }
 
-    public LiveData<List<TvShowEntity>> loadTvShows() {
+    public LiveData<PagedList<TvShowEntity>> loadTvShows() {
         return repository.getTvShows();
     }
 }

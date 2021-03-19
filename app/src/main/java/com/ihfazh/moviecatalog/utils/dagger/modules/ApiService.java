@@ -12,7 +12,7 @@ import retrofit2.http.Query;
 
 public interface ApiService {
     @GET("tv/popular")
-    Call<TVListResponse> listTv();
+    Call<TVListResponse> listTv(@Query("page") String page);
 
     @GET("movie/popular")
     Call<MovieListResponse> listMovie(@Query("page") String page);

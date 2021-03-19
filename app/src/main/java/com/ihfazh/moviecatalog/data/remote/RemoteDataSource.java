@@ -6,11 +6,8 @@ import androidx.paging.DataSource;
 import com.ihfazh.moviecatalog.data.responses.MovieDetail;
 import com.ihfazh.moviecatalog.data.responses.MovieResultItem;
 import com.ihfazh.moviecatalog.data.responses.TVDetail;
-import com.ihfazh.moviecatalog.data.responses.TVListResponse;
 import com.ihfazh.moviecatalog.data.responses.TVResultItem;
 import com.ihfazh.moviecatalog.utils.dagger.modules.ApiService;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -44,18 +41,15 @@ public class RemoteDataSource {
         return factory;
     }
 
-    public void listTvShows(DataSourceCallback<List<TVResultItem>> callback){
-        apiService.listTv().enqueue(new Callback<TVListResponse>() {
+    public DataSource.Factory<Integer, TVResultItem> listTvShows(){
+        DataSource.Factory<Integer, TVResultItem> factory = new DataSource.Factory<Integer, TVResultItem>() {
+            @NonNull
             @Override
-            public void onResponse(Call<TVListResponse> call, Response<TVListResponse> response) {
-                callback.onSuccess(response.body().getResults());
+            public DataSource<Integer, TVResultItem> create() {
+                return new TvPagingDataSource(apiService);
             }
-
-            @Override
-            public void onFailure(Call<TVListResponse> call, Throwable t) {
-                callback.onError(t.getMessage());
-            }
-        });
+        };
+        return factory;
     }
 
     public void getMovieById(String id, DataSourceCallback<MovieDetail> callback){
