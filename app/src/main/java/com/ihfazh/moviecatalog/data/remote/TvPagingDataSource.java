@@ -1,65 +1,39 @@
 package com.ihfazh.moviecatalog.data.remote;
 
 import androidx.annotation.NonNull;
-import androidx.paging.PageKeyedDataSource;
 
 import com.ihfazh.moviecatalog.data.responses.TVListResponse;
 import com.ihfazh.moviecatalog.data.responses.TVResultItem;
 import com.ihfazh.moviecatalog.utils.dagger.modules.ApiService;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TvPagingDataSource extends PageKeyedDataSource<Integer, TVResultItem> {
-    @NonNull private ApiService apiService;
+public class TvPagingDataSource extends BaseDataSource<TVResultItem, TVListResponse>{
 
     @Inject
     public TvPagingDataSource(@NonNull ApiService apiService) {
-        this.apiService = apiService;
+        super(apiService);
     }
 
     @Override
-    public void loadInitial(@NonNull LoadInitialParams<Integer> params, @NonNull LoadInitialCallback<Integer, TVResultItem> callback) {
-        apiService.listTv("1").enqueue(new Callback<TVListResponse>() {
-            @Override
-            public void onResponse(Call<TVListResponse> call, Response<TVListResponse> response) {
-                if (response.isSuccessful() && response.body() != null)
-                    callback.onResult(response.body().getResults(), null, 1);
-            }
-
-            @Override
-            public void onFailure(Call<TVListResponse> call, Throwable t) {
-
-            }
-        });
-
+    protected Call<TVListResponse> getCall(String page) {
+        return getApiService().listTv(page);
     }
 
     @Override
-    public void loadBefore(@NonNull LoadParams<Integer> params, @NonNull LoadCallback<Integer, TVResultItem> callback) {
-
+    protected List<TVResultItem> getResponse(Response<TVListResponse> body) {
+        assert body.body() != null;
+        return body.body().getResults();
     }
 
     @Override
-    public void loadAfter(@NonNull LoadParams<Integer> params, @NonNull LoadCallback<Integer, TVResultItem> callback) {
-        apiService.listTv(String.valueOf(params.key)).enqueue(new Callback<TVListResponse>() {
-            @Override
-            public void onResponse(Call<TVListResponse> call, Response<TVListResponse> response) {
-                if (response.body() != null){
-                    Integer nextPage = (response.body().getPage() < 1000) ? params.key + 1: null;
-                    callback.onResult(response.body().getResults(), nextPage);
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<TVListResponse> call, Throwable t) {
-
-            }
-        });
-
+    protected Integer getPage(Response<TVListResponse> response) {
+        assert response.body() != null;
+        return response.body().getPage();
     }
 }
