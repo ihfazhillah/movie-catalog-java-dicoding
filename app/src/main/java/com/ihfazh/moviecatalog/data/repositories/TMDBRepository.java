@@ -11,6 +11,7 @@ import androidx.paging.PagedList;
 import com.ihfazh.moviecatalog.data.datasources.TMDBDataSource;
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
+import com.ihfazh.moviecatalog.data.local.AppDatabase;
 import com.ihfazh.moviecatalog.data.remote.RemoteDataSource;
 import com.ihfazh.moviecatalog.data.responses.MovieDetail;
 import com.ihfazh.moviecatalog.data.responses.MovieResultItem;
@@ -19,16 +20,19 @@ import com.ihfazh.moviecatalog.data.responses.TVResultItem;
 import com.ihfazh.moviecatalog.utils.EspressoIdlingResources;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
 public class TMDBRepository implements TMDBDataSource {
     private static final String TAG = "TMDBRepository";
     private final RemoteDataSource dataSource;
+    private final AppDatabase localSource;
 
     @Inject
-    public TMDBRepository(RemoteDataSource dataSource) {
+    public TMDBRepository(RemoteDataSource dataSource, AppDatabase database) {
         this.dataSource = dataSource;
+        this.localSource = database;
     }
 
     private static MovieEntity apply(MovieResultItem item) {
@@ -103,6 +107,9 @@ public class TMDBRepository implements TMDBDataSource {
                 entity.setStatus(response.getStatus());
                 entity.setId(String.valueOf(response.getId()));
                 movieEntity.setValue(entity);
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    localSource.movieDao().insert(entity);
+                });
                 EspressoIdlingResources.decrement();
             }
 
@@ -128,6 +135,11 @@ public class TMDBRepository implements TMDBDataSource {
                 entity.setType(response.getType());
                 entity.setId(String.valueOf(response.getId()));
                 entity.setStatus(response.getStatus());
+
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    localSource.tvDao().insert(entity);
+                });
+
                 tvShowEntity.postValue(entity);
                 EspressoIdlingResources.decrement();
 

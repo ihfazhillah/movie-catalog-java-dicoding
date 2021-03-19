@@ -1,5 +1,6 @@
 package com.ihfazh.moviecatalog.utils.dagger.modules;
 
+import com.ihfazh.moviecatalog.data.local.AppDatabase;
 import com.ihfazh.moviecatalog.data.remote.RemoteDataSource;
 import com.ihfazh.moviecatalog.data.repositories.TMDBRepository;
 
@@ -17,7 +18,7 @@ public class RepositoryModule {
     }
     @Singleton
     @Provides
-    TMDBRepository provideRepository(RemoteDataSource remoteDataSource){
-        return new TMDBRepository(remoteDataSource);
+    TMDBRepository provideRepository(RemoteDataSource remoteDataSource, AppDatabase db){
+        return new TMDBRepository(remoteDataSource, db);
     }
 }
