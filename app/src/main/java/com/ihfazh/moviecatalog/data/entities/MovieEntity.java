@@ -1,15 +1,44 @@
 package com.ihfazh.moviecatalog.data.entities;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "movie")
 public class MovieEntity {
+    @ColumnInfo
     private String posterUrl;
+    @ColumnInfo
     private String title;
+    @ColumnInfo
     private String length;
+    @ColumnInfo
     private String status;
+    @ColumnInfo
     private String language;
+    @ColumnInfo
     private String budget;
+    @ColumnInfo
     private String overview;
+    @ColumnInfo
     private String score;
+
+    @PrimaryKey
+    @ColumnInfo
+    @NonNull
     private String id;
+
+    @ColumnInfo
+    private boolean bookmarked = false;
+
+    public boolean isBookmarked() {
+        return bookmarked;
+    }
+
+    public void setBookmarked(boolean bookmarked) {
+        this.bookmarked = bookmarked;
+    }
 
     public MovieEntity() {
     }
