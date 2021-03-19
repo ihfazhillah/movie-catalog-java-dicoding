@@ -21,4 +21,7 @@ public interface ApplicationComponent {
     void inject(TvShowsFragment view);
     void inject(DetailMovieActivity view);
     void inject(DetailTvShowActivity view);
+
+    void inject(com.ihfazh.moviecatalog.ui.favorites.movies.MovieListFragment movieListFragment);
+    void inject(com.ihfazh.moviecatalog.ui.favorites.tvshows.TvShowsFragment tvShowsFragment);
 }

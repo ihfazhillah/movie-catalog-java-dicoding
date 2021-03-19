@@ -193,4 +193,12 @@ public class TMDBRepository implements TMDBDataSource {
         );
 
     }
+
+    public DataSource.Factory<Integer, TvShowEntity> getBookmarkedTv() {
+        return localSource.tvDao().getBookmarkedTvShows();
+    }
+
+    public DataSource.Factory<Integer, MovieEntity> getBookmarkedMovie() {
+        return localSource.movieDao().getBookmarkedMovie();
+    }
 }

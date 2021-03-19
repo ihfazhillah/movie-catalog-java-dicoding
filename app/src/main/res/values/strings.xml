@@ -11,4 +11,5 @@
     <string name="length_title">Durasi</string>
     <string name="detail_title">Detail</string>
     <string name="bookmark">Bookmark</string>
+    <string name="daftar_favorite">Daftar Favorite</string>
 </resources>

@@ -28,6 +28,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.favorites.FavoriteActivity"
+            android:parentActivityName=".ui.home.HomeActivity"/>
     </application>
 
 </manifest>

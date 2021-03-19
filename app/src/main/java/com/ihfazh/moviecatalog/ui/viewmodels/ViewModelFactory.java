@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.ihfazh.moviecatalog.data.repositories.TMDBRepository;
+import com.ihfazh.moviecatalog.ui.favorites.FavoriteViewModel;
 import com.ihfazh.moviecatalog.ui.home.HomeViewModel;
 import com.ihfazh.moviecatalog.ui.movie.DetailMovieViewModel;
 import com.ihfazh.moviecatalog.ui.tvshows.DetailTvShowViewModel;
@@ -28,6 +29,8 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
             return (T) new DetailMovieViewModel(repository);
         } else if (modelClass.isAssignableFrom(DetailTvShowViewModel.class)){
             return (T) new DetailTvShowViewModel(repository);
+        } else if (modelClass.isAssignableFrom(FavoriteViewModel.class)){
+            return (T) new FavoriteViewModel(repository);
         }
         return super.create(modelClass);
     }
