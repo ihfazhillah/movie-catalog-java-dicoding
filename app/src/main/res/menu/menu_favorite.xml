@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:checkableBehavior="single"
+        >
+        <item
+            android:title="@string/dari_a"
+            android:id="@+id/action_asc"
+            android:checked="true"
+            />
+        <item
+            android:title="@string/dari_z"
+            android:id="@+id/action_desc"
+            android:checked="false"
+            />
+        <item
+            android:title="@string/random"
+            android:id="@+id/action_random"
+            android:checked="false"
+            />
+    </group>
+
+</menu>

@@ -12,4 +12,7 @@
     <string name="detail_title">Detail</string>
     <string name="bookmark">Bookmark</string>
     <string name="daftar_favorite">Daftar Favorite</string>
+    <string name="dari_a">Dari A</string>
+    <string name="dari_z">Dari Z</string>
+    <string name="random">Random</string>
 </resources>

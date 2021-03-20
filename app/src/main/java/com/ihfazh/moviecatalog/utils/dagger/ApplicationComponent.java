@@ -1,5 +1,6 @@
 package com.ihfazh.moviecatalog.utils.dagger;
 
+import com.ihfazh.moviecatalog.ui.favorites.FavoriteActivity;
 import com.ihfazh.moviecatalog.ui.home.movies.MovieListFragment;
 import com.ihfazh.moviecatalog.ui.home.tvshows.TvShowsFragment;
 import com.ihfazh.moviecatalog.ui.movie.DetailMovieActivity;
@@ -24,4 +25,6 @@ public interface ApplicationComponent {
 
     void inject(com.ihfazh.moviecatalog.ui.favorites.movies.MovieListFragment movieListFragment);
     void inject(com.ihfazh.moviecatalog.ui.favorites.tvshows.TvShowsFragment tvShowsFragment);
+
+    void inject(FavoriteActivity favoriteActivity);
 }

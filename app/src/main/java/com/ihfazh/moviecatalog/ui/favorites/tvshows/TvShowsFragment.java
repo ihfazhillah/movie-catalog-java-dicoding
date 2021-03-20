@@ -84,7 +84,7 @@ public class TvShowsFragment extends Fragment {
 
 
         FavoriteViewModel modelView = new ViewModelProvider(requireActivity(), factory).get(FavoriteViewModel.class);
-        modelView.loadTvShows().observe(getViewLifecycleOwner(), adapter::submitList);
+        modelView.loadTvShows.observe(getViewLifecycleOwner(), adapter::submitList);
 
         binding.rvTvShows.setAdapter(adapter);
     }

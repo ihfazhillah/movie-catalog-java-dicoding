@@ -71,7 +71,7 @@ public class MovieListFragment extends Fragment implements OnListItemClicked {
         MovieListAdapter adapter = new MovieListAdapter();
         binding.rvMovies.setAdapter(adapter);
         adapter.setListener(this);
-        viewModel.loadMovies().observe(getViewLifecycleOwner(), movieEntities -> {
+        viewModel.loadMovies.observe(getViewLifecycleOwner(), movieEntities -> {
             adapter.submitList(movieEntities);
             Log.d(TAG, "onChanged: " + movieEntities.toString());
         });

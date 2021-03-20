@@ -6,7 +6,9 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.RawQuery;
 import androidx.room.Update;
+import androidx.sqlite.db.SimpleSQLiteQuery;
 
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 
@@ -23,4 +25,7 @@ public interface TVShowDao {
 
     @Query("select * from tv_show where id = :id")
     LiveData<TvShowEntity> getTv(String id);
+
+    @RawQuery(observedEntities = TvShowEntity.class)
+    DataSource.Factory<Integer, TvShowEntity> getBookmarkedTvShowsSort(SimpleSQLiteQuery query);
 }

@@ -7,6 +7,7 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
+import androidx.sqlite.db.SimpleSQLiteQuery;
 
 import com.ihfazh.moviecatalog.data.datasources.TMDBDataSource;
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
@@ -18,6 +19,9 @@ import com.ihfazh.moviecatalog.data.responses.MovieResultItem;
 import com.ihfazh.moviecatalog.data.responses.TVDetail;
 import com.ihfazh.moviecatalog.data.responses.TVResultItem;
 import com.ihfazh.moviecatalog.utils.EspressoIdlingResources;
+import com.ihfazh.moviecatalog.utils.sql.MovieSqlHelper;
+import com.ihfazh.moviecatalog.utils.sql.Sort;
+import com.ihfazh.moviecatalog.utils.sql.TvSqlHelper;
 
 import java.util.concurrent.Executors;
 
@@ -189,11 +193,13 @@ public class TMDBRepository implements TMDBDataSource {
 
     }
 
-    public DataSource.Factory<Integer, TvShowEntity> getBookmarkedTv() {
-        return localSource.tvDao().getBookmarkedTvShows();
+    public DataSource.Factory<Integer, TvShowEntity> getBookmarkedTv(Sort sort) {
+        SimpleSQLiteQuery query = TvSqlHelper.getListBookmarked(sort);
+        return localSource.tvDao().getBookmarkedTvShowsSort(query);
     }
 
-    public DataSource.Factory<Integer, MovieEntity> getBookmarkedMovie() {
-        return localSource.movieDao().getBookmarkedMovie();
+    public DataSource.Factory<Integer, MovieEntity> getBookmarkedMovie(Sort sort) {
+        SimpleSQLiteQuery query = MovieSqlHelper.getListBookmarked(sort);
+        return localSource.movieDao().getBookmarkedMovieSort(query);
     }
 }

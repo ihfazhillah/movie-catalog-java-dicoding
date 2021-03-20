@@ -6,7 +6,9 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.RawQuery;
 import androidx.room.Update;
+import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 
@@ -23,4 +25,7 @@ public interface MovieDao {
 
     @Query("select * from movie where id = :id")
     LiveData<MovieEntity> getMovie(String id);
+
+    @RawQuery(observedEntities = MovieEntity.class)
+    DataSource.Factory<Integer, MovieEntity> getBookmarkedMovieSort(SupportSQLiteQuery query);
 }
