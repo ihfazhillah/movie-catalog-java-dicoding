@@ -2,6 +2,7 @@ package com.ihfazh.moviecatalog.ui.home;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -11,7 +12,6 @@ import com.ihfazh.moviecatalog.R;
 import com.ihfazh.moviecatalog.utils.EspressoIdlingResources;
 import com.ihfazh.moviecatalog.utils.TMDBUtils;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -228,7 +228,7 @@ public class HomeActivityTest {
         onView(withId(R.id.rv_tv_shows)).check(matches(hasChildCount(0)));
     }
 
-    @NotNull
+    @NonNull
     private String getFileContent(String fileName) throws IOException {
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(fileName);
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -243,9 +243,9 @@ public class HomeActivityTest {
     }
     private void setWebserverDispatcher() {
         webServer.setDispatcher(new Dispatcher() {
-            @NotNull
+            @NonNull
             @Override
-            public MockResponse dispatch(@NotNull RecordedRequest recordedRequest) throws InterruptedException {
+            public MockResponse dispatch(@NonNull RecordedRequest recordedRequest) throws InterruptedException {
                 Log.d(TAG, "dispatch: " + recordedRequest.getPath());
                 String path = recordedRequest.getPath();
                 assert path != null;
