@@ -31,7 +31,9 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasChildCount;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withSubstring;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -176,6 +178,56 @@ public class HomeActivityTest {
         onView(withId(R.id.status)).check(matches(withText("Ended")));
     }
 
+    @Test
+    public void testCheckBookmarkIsEmpty(){
+        onView(withId(R.id.action_favorite)).perform(click());
+        onView(withText("Movies")).check(matches(isDisplayed()));
+        onView(withText("TV Shows")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.rv_movies)).check(matches(hasChildCount(0)));
+
+        onView(withText("TV Shows")).perform(click());
+        onView(withId(R.id.rv_tv_shows)).check(matches(hasChildCount(0)));
+    }
+
+    @Test
+    public void testAddMovieBookmark_check_thenRemove(){
+        onView(withId(R.id.rv_movies)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        onView(withId(R.id.action_bookmark)).perform(click());
+
+        onView(withContentDescription("Navigate up")).perform(click());
+
+        onView(withId(R.id.action_favorite)).perform(click());
+        onView(withId(R.id.rv_movies)).check(matches(isDisplayed()));
+        onView(withId(R.id.rv_movies)).check(matches(hasChildCount(1)));
+
+        onView(withId(R.id.rv_movies)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        onView(withId(R.id.action_bookmark)).perform(click());
+        onView(withContentDescription("Navigate up")).perform(click());
+        onView(withId(R.id.rv_movies)).check(matches(hasChildCount(0)));
+    }
+
+
+    @Test
+    public void testAddTvBookmark_check_thenRemove(){
+        onView(withText("TV Shows")).perform(click());
+        onView(withId(R.id.rv_tv_shows)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        onView(withId(R.id.action_bookmark)).perform(click());
+
+        onView(withContentDescription("Navigate up")).perform(click());
+
+        onView(withId(R.id.action_favorite)).perform(click());
+        onView(withText("TV Shows")).perform(click());
+        onView(withId(R.id.rv_tv_shows)).check(matches(isDisplayed()));
+        onView(withId(R.id.rv_tv_shows)).check(matches(hasChildCount(1)));
+
+        onView(withId(R.id.rv_tv_shows)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        onView(withId(R.id.action_bookmark)).perform(click());
+        onView(withContentDescription("Navigate up")).perform(click());
+        onView(withText("TV Shows")).perform(click());
+        onView(withId(R.id.rv_tv_shows)).check(matches(hasChildCount(0)));
+    }
+
     @NotNull
     private String getFileContent(String fileName) throws IOException {
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(fileName);
@@ -218,6 +270,7 @@ public class HomeActivityTest {
                         Log.e(TAG, "error movie: ", e);
                     }
                 } else if (path.contains("movie/")) {
+                    Log.d(TAG, "detail movie: " + recordedRequest.getPath());
                     try {
                         return new MockResponse()
                                 .setResponseCode(200)
@@ -228,6 +281,7 @@ public class HomeActivityTest {
                     }
                 }
              else if (path.contains("tv/")) {
+                    Log.d(TAG, "detail tv: " + recordedRequest.getPath());
 
                     try {
                         return new MockResponse()
