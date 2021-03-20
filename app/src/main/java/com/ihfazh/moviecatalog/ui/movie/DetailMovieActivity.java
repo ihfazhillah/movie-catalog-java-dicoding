@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.ihfazh.moviecatalog.R;
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.databinding.ActivityDetailMovieBinding;
+import com.ihfazh.moviecatalog.ui.favorites.FavoriteActivity;
 import com.ihfazh.moviecatalog.ui.viewmodels.ViewModelFactory;
 import com.ihfazh.moviecatalog.utils.TMDBUtils;
 import com.ihfazh.moviecatalog.utils.dagger.ApplicationComponent;
@@ -25,6 +26,9 @@ import javax.inject.Inject;
 public class DetailMovieActivity extends AppCompatActivity {
 
     public static final String MOVIE_ID = "movie_id";
+    public static final String FROM_FAVORITE_PAGE = "from_favorite_page";
+    private boolean fromFavoritePage;
+
     @Inject
     public ViewModelFactory factory;
     DetailMovieViewModel viewModel;
@@ -51,6 +55,10 @@ public class DetailMovieActivity extends AppCompatActivity {
             viewModel.setIsLoading(false);
 
             setBookmarkState(movie.isBookmarked());
+
+            if (getSupportActionBar() != null){
+                getSupportActionBar().setTitle(movie.getTitle());
+            }
         }
     };
 
@@ -63,6 +71,7 @@ public class DetailMovieActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         movieTitle = intent.getStringExtra(MOVIE_ID);
+        fromFavoritePage = intent.getBooleanExtra(FROM_FAVORITE_PAGE, false);
 
         viewModel = new ViewModelProvider(this, factory).get(DetailMovieViewModel.class);
 
@@ -111,5 +120,23 @@ public class DetailMovieActivity extends AppCompatActivity {
         } else {
             item.setIcon(R.drawable.bookmark_off);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (fromFavoritePage){
+            // should keep track the page button
+            Intent intent = new Intent(DetailMovieActivity.this, FavoriteActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        this.onBackPressed();
+        return true;
     }
 }

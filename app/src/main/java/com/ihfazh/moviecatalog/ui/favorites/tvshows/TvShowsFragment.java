@@ -78,6 +78,7 @@ public class TvShowsFragment extends Fragment {
         adapter.setListener(title -> {
             Intent intent = new Intent(requireActivity(), DetailTvShowActivity.class);
             intent.putExtra(DetailTvShowActivity.TV_SHOW_TITLE, title);
+            intent.putExtra(DetailTvShowActivity.FROM_FAVORITE_PAGE, true);
             startActivity(intent);
         });
 

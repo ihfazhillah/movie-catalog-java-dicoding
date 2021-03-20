@@ -96,7 +96,6 @@ public class TMDBRepository implements TMDBDataSource {
                 newData -> {
                     if (newData != null){
                         result.setValue(newData);
-                        result.removeSource(dbSource);
                         Log.d(TAG, "getMovieById: get from db");
                     } else {
                         Log.d(TAG, "getMovieById: get from remote");
@@ -121,7 +120,6 @@ public class TMDBRepository implements TMDBDataSource {
                                 });
 
                                 EspressoIdlingResources.decrement();
-                                result.removeSource(dbSource);
                             }
 
                             @Override
@@ -132,7 +130,6 @@ public class TMDBRepository implements TMDBDataSource {
                     }
                 }
         );
-        EspressoIdlingResources.increment();
         return result;
     }
 
@@ -144,7 +141,6 @@ public class TMDBRepository implements TMDBDataSource {
                 newData -> {
                     if (newData != null){
                         result.setValue(newData);
-                        result.removeSource(dbSource);
                     } else {
                         EspressoIdlingResources.increment();
                         dataSource.getTvById(id, new RemoteDataSource.DataSourceCallback<TVDetail>() {
@@ -165,7 +161,6 @@ public class TMDBRepository implements TMDBDataSource {
                                 });
 
                                 EspressoIdlingResources.decrement();
-                                result.removeSource(dbSource);
 
                             }
 

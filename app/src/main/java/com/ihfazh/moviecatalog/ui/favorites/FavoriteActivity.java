@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.ihfazh.moviecatalog.R;
 import com.ihfazh.moviecatalog.databinding.ActivityFavoriteBinding;
 
 public class FavoriteActivity extends AppCompatActivity {
@@ -18,6 +19,10 @@ public class FavoriteActivity extends AppCompatActivity {
         binding.viewPager.setAdapter(pagerAdapter);
 
         binding.tab.setupWithViewPager(binding.viewPager);
+
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setTitle(R.string.daftar_favorite);
+        }
     }
 
 

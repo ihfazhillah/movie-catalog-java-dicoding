@@ -83,6 +83,7 @@ public class MovieListFragment extends Fragment implements OnListItemClicked {
     public void onItemClicked(String title) {
         Intent intent = new Intent(requireActivity(), DetailMovieActivity.class);
         intent.putExtra(DetailMovieActivity.MOVIE_ID, title);
+        intent.putExtra(DetailMovieActivity.FROM_FAVORITE_PAGE, true);
         startActivity(intent);
     }
 }
