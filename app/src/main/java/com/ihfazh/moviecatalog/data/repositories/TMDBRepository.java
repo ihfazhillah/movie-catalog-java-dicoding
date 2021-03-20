@@ -15,9 +15,7 @@ import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.data.local.AppDatabase;
 import com.ihfazh.moviecatalog.data.remote.RemoteDataSource;
 import com.ihfazh.moviecatalog.data.responses.MovieDetail;
-import com.ihfazh.moviecatalog.data.responses.MovieResultItem;
 import com.ihfazh.moviecatalog.data.responses.TVDetail;
-import com.ihfazh.moviecatalog.data.responses.TVResultItem;
 import com.ihfazh.moviecatalog.utils.EspressoIdlingResources;
 import com.ihfazh.moviecatalog.utils.sql.MovieSqlHelper;
 import com.ihfazh.moviecatalog.utils.sql.Sort;
@@ -38,63 +36,38 @@ public class TMDBRepository implements TMDBDataSource {
         this.localSource = database;
     }
 
-    private static MovieEntity apply(MovieResultItem item) {
-        return new MovieEntity(
-                String.valueOf(item.getId()),
-                item.getPosterPath(),
-                item.getTitle(),
-                null,
-                null,
-                null,
-                null,
-                item.getOverview(),
-                null
-        );
-    }
 
-    private static TvShowEntity apply(TVResultItem item){
-        return new TvShowEntity(
-                String.valueOf(item.getId()),
-                item.getPosterPath(),
-                item.getName(),
-                null,
-                null,
-                null,
-                null
-        );
+    private PagedList.Config getPagingConfig(){
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(true)
+                .setPageSize(20)
+                .setInitialLoadSizeHint(20).build();
+        return config;
     }
 
     @Override
     public LiveData<PagedList<MovieEntity>> getMovies() {
 
         EspressoIdlingResources.increment();
-        DataSource.Factory<Integer, MovieEntity> liveData = dataSource.listMovie().map(TMDBRepository::apply);
-
-        PagedList.Config config = new PagedList.Config.Builder()
-                .setEnablePlaceholders(true)
-                .setPageSize(20)
-                .setInitialLoadSizeHint(20).build();
+        DataSource.Factory<Integer, MovieEntity> liveData = dataSource.listMovie();
         EspressoIdlingResources.decrement();
 
-        return new LivePagedListBuilder<>(liveData, config).build();
+        return new LivePagedListBuilder<>(liveData, getPagingConfig()).build();
     }
 
     @Override
     public LiveData<PagedList<TvShowEntity>> getTvShows() {
+
         EspressoIdlingResources.increment();
-        DataSource.Factory<Integer, TvShowEntity> factory = dataSource.listTvShows().map(TMDBRepository::apply);
-        PagedList.Config config = new PagedList.Config.Builder()
-                .setEnablePlaceholders(true)
-                .setPageSize(20)
-                .setInitialLoadSizeHint(20)
-                .build();
+        DataSource.Factory<Integer, TvShowEntity> factory = dataSource.listTvShows();
         EspressoIdlingResources.decrement();
-        return new LivePagedListBuilder<>(factory, config).build();
+
+        return new LivePagedListBuilder<>(factory, getPagingConfig()).build();
     }
 
     public LiveData<MovieEntity> getMovieById(String id) {
         MediatorLiveData<MovieEntity> result = new MediatorLiveData<>();
-        LiveData<MovieEntity> dbSource = localSource.movieDao().getMovie(id);
+        LiveData<MovieEntity> dbSource = localSource.getMovie(id);
         result.addSource(
                 dbSource,
                 newData -> {
@@ -139,7 +112,7 @@ public class TMDBRepository implements TMDBDataSource {
 
     public LiveData<TvShowEntity> getTvById(String id){
         MediatorLiveData<TvShowEntity> result = new MediatorLiveData<>();
-        LiveData<TvShowEntity> dbSource = localSource.tvDao().getTv(id);
+        LiveData<TvShowEntity> dbSource = localSource.getTv(id);
         result.addSource(
                 dbSource,
                 newData -> {

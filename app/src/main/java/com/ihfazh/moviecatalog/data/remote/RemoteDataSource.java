@@ -3,6 +3,8 @@ package com.ihfazh.moviecatalog.data.remote;
 import androidx.annotation.NonNull;
 import androidx.paging.DataSource;
 
+import com.ihfazh.moviecatalog.data.entities.MovieEntity;
+import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.data.responses.MovieDetail;
 import com.ihfazh.moviecatalog.data.responses.MovieResultItem;
 import com.ihfazh.moviecatalog.data.responses.TVDetail;
@@ -29,7 +31,33 @@ public class RemoteDataSource {
     }
 
 
-    public DataSource.Factory<Integer, MovieResultItem> listMovie(){
+    private MovieEntity apply(MovieResultItem item) {
+        return new MovieEntity(
+                String.valueOf(item.getId()),
+                item.getPosterPath(),
+                item.getTitle(),
+                null,
+                null,
+                null,
+                null,
+                item.getOverview(),
+                null
+        );
+    }
+
+    private TvShowEntity apply(TVResultItem item){
+        return new TvShowEntity(
+                String.valueOf(item.getId()),
+                item.getPosterPath(),
+                item.getName(),
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
+    public DataSource.Factory<Integer, MovieEntity> listMovie(){
         DataSource.Factory<Integer, MovieResultItem> factory = new DataSource.Factory<Integer, MovieResultItem>() {
             @NonNull
             @Override
@@ -38,10 +66,11 @@ public class RemoteDataSource {
             }
         };
 
-        return factory;
+        return factory.map(this::apply);
     }
 
-    public DataSource.Factory<Integer, TVResultItem> listTvShows(){
+
+    public DataSource.Factory<Integer, TvShowEntity> listTvShows(){
         DataSource.Factory<Integer, TVResultItem> factory = new DataSource.Factory<Integer, TVResultItem>() {
             @NonNull
             @Override
@@ -49,7 +78,7 @@ public class RemoteDataSource {
                 return new TvPagingDataSource(apiService);
             }
         };
-        return factory;
+        return factory.map(this::apply);
     }
 
     public void getMovieById(String id, DataSourceCallback<MovieDetail> callback){
