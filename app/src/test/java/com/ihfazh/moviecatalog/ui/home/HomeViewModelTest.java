@@ -3,11 +3,11 @@ package com.ihfazh.moviecatalog.ui.home;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.paging.PagedList;
 
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.data.repositories.TMDBRepository;
-import com.ihfazh.moviecatalog.utils.DummyData;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,6 +21,9 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HomeViewModelTest {
@@ -35,8 +38,8 @@ public class HomeViewModelTest {
     @Rule public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Mock private TMDBRepository repository;
-    @Mock private Observer<List<MovieEntity>> moviesObserver;
-    @Mock private Observer<List<TvShowEntity>> tvShowsObserver;
+    @Mock private Observer<PagedList<MovieEntity>> moviesObserver;
+    @Mock private Observer<PagedList<TvShowEntity>> tvShowsObserver;
 
     @Before
     public void setUp() throws Exception {
@@ -45,14 +48,18 @@ public class HomeViewModelTest {
 
     @Test
     public void testLoadMovies(){
-        List<MovieEntity> dummyMovies = DummyData.generateMovies();
-        MutableLiveData<List<MovieEntity>> movies = new MutableLiveData<>();
+        PagedList<MovieEntity> dummyMovies = mock(PagedList.class);
+        MutableLiveData<PagedList<MovieEntity>> movies = new MutableLiveData<>();
         movies.setValue(dummyMovies);
 
-        Mockito.when(repository.getMovies()).thenReturn(movies);
+        when(repository.getMovies()).thenReturn(movies);
         List<MovieEntity> movieEntities = viewModel.loadMovies().getValue();
+        verify(repository).getMovies();
         assertNotNull(movieEntities);
+
+        when(movieEntities.size()).thenReturn(10);
         assertEquals(10, movieEntities.size());
+        verify(movieEntities).size();
 
         viewModel.loadMovies().observeForever(moviesObserver);
         Mockito.verify(moviesObserver).onChanged(dummyMovies);
@@ -60,15 +67,18 @@ public class HomeViewModelTest {
 
     @Test
     public void testLoadTvShows(){
-        List<TvShowEntity> dummyTvShows = DummyData.generateTvShows();
-        MutableLiveData<List<TvShowEntity>> tvShows = new MutableLiveData<>();
+        PagedList<TvShowEntity> dummyTvShows = mock(PagedList.class);
+        MutableLiveData<PagedList<TvShowEntity>> tvShows = new MutableLiveData<>();
         tvShows.setValue(dummyTvShows);
 
-        Mockito.when(repository.getTvShows()).thenReturn(tvShows);
-
+        when(repository.getTvShows()).thenReturn(tvShows);
         List<TvShowEntity> tvShowEntities = viewModel.loadTvShows().getValue();
         assertNotNull(tvShowEntities);
+        verify(repository).getTvShows();
+
+        when(tvShowEntities.size()).thenReturn(10);
         assertEquals(10, tvShowEntities.size());
+        verify(tvShowEntities).size();
 
         viewModel.loadTvShows().observeForever(tvShowsObserver);
         Mockito.verify(tvShowsObserver).onChanged(dummyTvShows);

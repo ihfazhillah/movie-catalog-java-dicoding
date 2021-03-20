@@ -21,12 +21,12 @@ public class MoviePagingSource extends BaseDataSource<MovieResultItem, MovieList
     }
 
     @Override
-    protected Call<MovieListResponse> getCall(String page) {
+    public Call<MovieListResponse> getCall(String page) {
         return getApiService().listMovie(page);
     }
 
     @Override
-    protected List<MovieResultItem> getResponse(Response<MovieListResponse> body) {
+    public List<MovieResultItem> getResponse(Response<MovieListResponse> body) {
         assert body.body() != null;
         return body.body().getResults();
     }

@@ -18,9 +18,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 @RunWith(MockitoJUnitRunner.class)
 public class DetailTvShowViewModelTest {
     DetailTvShowViewModel viewModel;
@@ -36,6 +33,7 @@ public class DetailTvShowViewModelTest {
     @Before
     public void setUp() throws Exception {
         viewModel = new DetailTvShowViewModel(repository);
+        viewModel.setId(firstTvShow.getId());
     }
 
     @Test
@@ -45,11 +43,7 @@ public class DetailTvShowViewModelTest {
 
         Mockito.when(repository.getTvById(firstTvShow.getId())).thenReturn(tvShow);
 
-        TvShowEntity tvShowEntity = viewModel.getTvShowById(firstTvShow.getId()).getValue();
-        assertNotNull(tvShowEntity);
-        assertEquals(firstTvShow.getTitle(), tvShowEntity.getTitle());
-
-        viewModel.getTvShowById(firstTvShow.getId()).observeForever(observer);
+        viewModel.tvShow.observeForever(observer);
         Mockito.verify(observer).onChanged(firstTvShow);
     }
 }

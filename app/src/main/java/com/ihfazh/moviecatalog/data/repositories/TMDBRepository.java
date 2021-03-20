@@ -202,4 +202,9 @@ public class TMDBRepository implements TMDBDataSource {
         SimpleSQLiteQuery query = MovieSqlHelper.getListBookmarked(sort);
         return localSource.movieDao().getBookmarkedMovieSort(query);
     }
+
+    public void setBookmark(MovieEntity entity, boolean state) {
+        entity.setBookmarked(state);
+        this.updateMovie(entity);
+    }
 }

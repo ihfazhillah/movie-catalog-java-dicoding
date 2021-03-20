@@ -18,8 +18,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DetailMovieViewModelTest {
@@ -40,21 +39,17 @@ public class DetailMovieViewModelTest {
     @Before
     public void setup(){
         viewModel = new DetailMovieViewModel(repository);
+        viewModel.setMovieId(firstMovie.getId());
     }
 
     @Test
     public void testGetMovieByTitle(){
         MutableLiveData<MovieEntity> movieEntity = new MutableLiveData<>();
         movieEntity.setValue(firstMovie);
-        Mockito.when(repository.getMovieById(firstMovie.getId())).thenReturn(movieEntity);
+        when(repository.getMovieById(firstMovie.getId())).thenReturn(movieEntity);
 
-        MovieEntity movie = viewModel.getMovieById(firstMovie.getId()).getValue();
-        assertNotNull(movie);
-        assertEquals(firstMovie.getTitle(), movie.getTitle());
-
-        viewModel.getMovieById(firstMovie.getId()).observeForever(observer);
+        viewModel.movie.observeForever(observer);
         Mockito.verify(observer).onChanged(firstMovie);
-
     }
 
 }

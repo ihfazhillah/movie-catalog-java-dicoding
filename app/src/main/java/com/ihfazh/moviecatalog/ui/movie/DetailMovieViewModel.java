@@ -1,7 +1,5 @@
 package com.ihfazh.moviecatalog.ui.movie;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
@@ -39,11 +37,8 @@ public class DetailMovieViewModel extends ViewModel {
     public void setBookmark(){
         MovieEntity entity = movie.getValue();
         if (entity != null){
-            Log.d(TAG, "setBookmark: " + entity.getTitle());
             boolean newState = !entity.isBookmarked();
-            Log.d(TAG, "setBookmark: " + entity.isBookmarked());
-            entity.setBookmarked(newState);
-            repository.updateMovie(entity);
+            repository.setBookmark(entity, newState);
         }
     }
 
