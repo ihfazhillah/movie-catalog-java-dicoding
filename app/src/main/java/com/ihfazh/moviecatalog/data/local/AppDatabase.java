@@ -1,8 +1,11 @@
 package com.ihfazh.moviecatalog.data.local;
 
 import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
+import androidx.sqlite.db.SimpleSQLiteQuery;
+import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
@@ -18,5 +21,14 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public LiveData<TvShowEntity> getTv(String id) {
         return this.tvDao().getTv(id);
+    }
+
+    public DataSource.Factory<Integer, MovieEntity> getBookmarkedMovie(SupportSQLiteQuery query) {
+        return movieDao().getBookmarkedMovieSort(query);
+
+    }
+
+    public DataSource.Factory<Integer, TvShowEntity> getBookmarkedTv(SimpleSQLiteQuery query) {
+        return tvDao().getBookmarkedTvShowsSort(query);
     }
 }

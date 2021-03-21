@@ -4,13 +4,14 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
-import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.data.repositories.TMDBRepository;
+import com.ihfazh.moviecatalog.utils.sql.MovieSqlHelper;
 import com.ihfazh.moviecatalog.utils.sql.Sort;
+import com.ihfazh.moviecatalog.utils.sql.TvSqlHelper;
 
 import javax.inject.Inject;
 
@@ -24,22 +25,23 @@ public class FavoriteViewModel extends ViewModel {
         this.repository = repository;
     }
 
-    public LiveData<PagedList<MovieEntity>> loadMovies() {
-        return new LivePagedListBuilder<>(repository.getBookmarkedMovie(Sort.RANDOM), 20).build();
-    }
-
     public LiveData<PagedList<MovieEntity>> loadMovies = Transformations.switchMap(
             sort,
-            mSort -> new LivePagedListBuilder<>(repository.getBookmarkedMovie(mSort), 20).build()
+            mSort -> repository.getBookmarkedMovie(MovieSqlHelper.getListBookmarked(mSort))
     );
 
     public LiveData<PagedList<TvShowEntity>> loadTvShows = Transformations.switchMap(
             sort,
-            mSort -> new LivePagedListBuilder<>(repository.getBookmarkedTv(mSort), 20).build()
+            mSort -> repository.getBookmarkedTv(TvSqlHelper.getListBookmarked(mSort))
+
     );
 
 
     public void setSort(Sort sort) {
         this.sort.postValue(sort);
+    }
+
+    public MutableLiveData<Sort> getSort() {
+        return sort;
     }
 }

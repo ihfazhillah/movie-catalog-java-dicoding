@@ -81,6 +81,8 @@ dependencies {
     // mockito
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
     testImplementation 'android.arch.core:core-testing:1.0.0-alpha3'
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
+
 
     implementation "androidx.test.espresso:espresso-idling-resource:$idleResourceVersion"
 

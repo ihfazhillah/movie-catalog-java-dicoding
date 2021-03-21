@@ -3,11 +3,15 @@ package com.ihfazh.moviecatalog.data.repositories;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.MutableLiveData;
 import androidx.paging.DataSource;
+import androidx.sqlite.db.SimpleSQLiteQuery;
 
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.data.local.AppDatabase;
 import com.ihfazh.moviecatalog.data.remote.RemoteDataSource;
+import com.ihfazh.moviecatalog.utils.sql.MovieSqlHelper;
+import com.ihfazh.moviecatalog.utils.sql.Sort;
+import com.ihfazh.moviecatalog.utils.sql.TvSqlHelper;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
@@ -44,6 +48,11 @@ public class TMDBRepositoryTest {
 
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
+
+    @Mock
+    DataSource.Factory<Integer, MovieEntity> movieFactory;
+    @Mock
+    DataSource.Factory<Integer, TvShowEntity> tvFactory;
 
     @Before
     public void setUp() {
@@ -92,6 +101,24 @@ public class TMDBRepositoryTest {
         repository.getTvById("1");
         verify(localDataSource).getTv(eq("1"));
         verify(remoteDataSource, never()).getTvById(eq("1"), any());
+    }
+
+    @Test
+    public void getBookmarkedMovie(){
+        SimpleSQLiteQuery query = MovieSqlHelper.getListBookmarked(Sort.RANDOM);
+        when(localDataSource.getBookmarkedMovie(query)).thenReturn(movieFactory);
+
+        repository.getBookmarkedMovie(query);
+        verify(localDataSource).getBookmarkedMovie(query);
+    }
+
+    @Test
+    public void getBookmarkedTv(){
+        SimpleSQLiteQuery query = TvSqlHelper.getListBookmarked(Sort.RANDOM);
+        when(localDataSource.getBookmarkedTv(query)).thenReturn(tvFactory);
+
+        repository.getBookmarkedTv(query);
+        verify(localDataSource).getBookmarkedTv(query);
     }
 
     @NotNull
