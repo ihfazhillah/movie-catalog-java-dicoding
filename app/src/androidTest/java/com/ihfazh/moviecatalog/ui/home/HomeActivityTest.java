@@ -63,10 +63,12 @@ public class HomeActivityTest {
     public void setUp() throws Exception {
         setWebserverDispatcher();
         webServer.start(8080);
+
+        TMDBUtils.memoryDb = true;
         TMDBUtils.BASE_URL = webServer.url("/").toString();
+
         ActivityScenario.launch(HomeActivity.class);
         IdlingRegistry.getInstance().register(EspressoIdlingResources.getEspressoIdlingResource());
-
     }
 
     @After

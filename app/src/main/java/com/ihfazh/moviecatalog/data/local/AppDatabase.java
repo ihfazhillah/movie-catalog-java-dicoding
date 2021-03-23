@@ -12,6 +12,7 @@ import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
+import com.ihfazh.moviecatalog.utils.TMDBUtils;
 
 @Database(entities = {MovieEntity.class, TvShowEntity.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
@@ -23,8 +24,13 @@ public abstract class AppDatabase extends RoomDatabase {
         if (instance == null){
             synchronized (AppDatabase.class){
                 if (instance == null){
-                    instance = Room.databaseBuilder(context, AppDatabase.class, "movie-catalog.db")
-                            .build();
+                    if (TMDBUtils.memoryDb){
+                        instance = Room.inMemoryDatabaseBuilder(context, AppDatabase.class)
+                                .build();
+                    } else {
+                        instance = Room.databaseBuilder(context, AppDatabase.class, "movie-catalog.db")
+                                .build();
+                    }
                 }
             }
         }
