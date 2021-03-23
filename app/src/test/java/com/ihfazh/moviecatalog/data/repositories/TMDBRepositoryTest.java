@@ -9,6 +9,7 @@ import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.data.local.AppDatabase;
 import com.ihfazh.moviecatalog.data.remote.RemoteDataSource;
+import com.ihfazh.moviecatalog.utils.AppExecutors;
 import com.ihfazh.moviecatalog.utils.sql.MovieSqlHelper;
 import com.ihfazh.moviecatalog.utils.sql.Sort;
 import com.ihfazh.moviecatalog.utils.sql.TvSqlHelper;
@@ -54,9 +55,11 @@ public class TMDBRepositoryTest {
     @Mock
     DataSource.Factory<Integer, TvShowEntity> tvFactory;
 
+    AppExecutors executors = new AppExecutors();
+
     @Before
     public void setUp() {
-        repository = new TMDBRepository(remoteDataSource, localDataSource);
+        repository = new TMDBRepository(remoteDataSource, localDataSource, executors);
     }
 
     @Test

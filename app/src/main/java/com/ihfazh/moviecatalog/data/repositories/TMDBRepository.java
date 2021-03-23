@@ -16,9 +16,8 @@ import com.ihfazh.moviecatalog.data.local.AppDatabase;
 import com.ihfazh.moviecatalog.data.remote.RemoteDataSource;
 import com.ihfazh.moviecatalog.data.responses.MovieDetail;
 import com.ihfazh.moviecatalog.data.responses.TVDetail;
+import com.ihfazh.moviecatalog.utils.AppExecutors;
 import com.ihfazh.moviecatalog.utils.EspressoIdlingResources;
-
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -26,11 +25,13 @@ public class TMDBRepository implements TMDBDataSource {
     private static final String TAG = "TMDBRepository";
     private final RemoteDataSource dataSource;
     private final AppDatabase localSource;
+    private final AppExecutors executors;
 
     @Inject
-    public TMDBRepository(RemoteDataSource dataSource, AppDatabase database) {
+    public TMDBRepository(RemoteDataSource dataSource, AppDatabase database, AppExecutors executors) {
         this.dataSource = dataSource;
         this.localSource = database;
+        this.executors = executors;
     }
 
 
@@ -89,7 +90,7 @@ public class TMDBRepository implements TMDBDataSource {
                                 entity.setId(String.valueOf(response.getId()));
                                 result.setValue(entity);
 
-                                Executors.newSingleThreadExecutor().execute(() -> {
+                                executors.diskIO().execute(() -> {
                                     localSource.movieDao().insert(entity);
                                 });
 
@@ -130,7 +131,8 @@ public class TMDBRepository implements TMDBDataSource {
                                 entity.setStatus(response.getStatus());
 
                                 result.setValue(entity);
-                                Executors.newSingleThreadExecutor().execute(() -> {
+
+                                executors.diskIO().execute(() -> {
                                     localSource.tvDao().insert(entity);
                                 });
 
@@ -151,14 +153,16 @@ public class TMDBRepository implements TMDBDataSource {
     }
 
     public void updateMovie(MovieEntity entity) {
-        Executors.newSingleThreadExecutor().execute(
-                () -> {localSource.movieDao().update(entity);}
+        executors.diskIO().execute(
+                () -> localSource.movieDao().update(entity)
         );
     }
 
     public void updateTv(TvShowEntity entity) {
-        Executors.newSingleThreadExecutor().execute(
-                () -> {localSource.tvDao().update(entity);}
+        executors.diskIO().execute(
+                () -> {
+                   localSource.tvDao().update(entity);
+                }
         );
 
     }
