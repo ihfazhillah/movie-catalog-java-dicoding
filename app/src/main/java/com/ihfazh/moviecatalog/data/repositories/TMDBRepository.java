@@ -181,4 +181,8 @@ public class TMDBRepository implements TMDBDataSource {
         entity.setBookmarked(state);
         this.updateMovie(entity);
     }
+    public void setBookmark(TvShowEntity entity, boolean state) {
+        entity.setBookmarked(state);
+        this.updateTv(entity);
+    }
 }

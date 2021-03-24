@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer;
 import com.ihfazh.moviecatalog.data.entities.MovieEntity;
 import com.ihfazh.moviecatalog.data.repositories.TMDBRepository;
 import com.ihfazh.moviecatalog.utils.DummyData;
+import com.ihfazh.moviecatalog.utils.LiveDataUtil;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,6 +19,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -52,4 +56,14 @@ public class DetailMovieViewModelTest {
         Mockito.verify(observer).onChanged(firstMovie);
     }
 
+    @Test
+    public void setBookmark() {
+        MutableLiveData<MovieEntity> movieEntity = new MutableLiveData<>();
+        movieEntity.setValue(firstMovie);
+        when(repository.getMovieById(firstMovie.getId())).thenReturn(movieEntity);
+        LiveDataUtil.getValue(viewModel.movie);
+
+        viewModel.setBookmark();
+        verify(repository).setBookmark(eq(firstMovie), anyBoolean());
+    }
 }

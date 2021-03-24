@@ -30,8 +30,7 @@ public class DetailTvShowViewModel extends ViewModel {
         TvShowEntity tv = tvShow.getValue();
         if (tv != null){
             boolean newState = !tv.isBookmarked();
-            tv.setBookmarked(newState);
-            repository.updateTv(tv);
+            repository.setBookmark(tv, newState);
         }
     }
 }

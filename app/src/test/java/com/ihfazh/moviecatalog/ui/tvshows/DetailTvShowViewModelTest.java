@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer;
 import com.ihfazh.moviecatalog.data.entities.TvShowEntity;
 import com.ihfazh.moviecatalog.data.repositories.TMDBRepository;
 import com.ihfazh.moviecatalog.utils.DummyData;
+import com.ihfazh.moviecatalog.utils.LiveDataUtil;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,6 +18,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.List;
+
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DetailTvShowViewModelTest {
@@ -44,6 +49,18 @@ public class DetailTvShowViewModelTest {
         Mockito.when(repository.getTvById(firstTvShow.getId())).thenReturn(tvShow);
 
         viewModel.tvShow.observeForever(observer);
-        Mockito.verify(observer).onChanged(firstTvShow);
+        verify(observer).onChanged(firstTvShow);
+    }
+
+    @Test
+    public void setBookmark() {
+        MutableLiveData<TvShowEntity> tvShow = new MutableLiveData<>();
+        tvShow.setValue(firstTvShow);
+        Mockito.when(repository.getTvById(firstTvShow.getId())).thenReturn(tvShow);
+        LiveDataUtil.getValue(viewModel.tvShow);
+
+        viewModel.setBookmark();
+        verify(repository).setBookmark(eq(firstTvShow), anyBoolean());
+
     }
 }
